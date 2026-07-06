@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useProgress, useDecks } from "@/hooks/use-data";
 import type { Character } from "@/lib/store";
+import { isDue } from "@/lib/srs";
 import { PracticeGrid } from "@/components/PracticeGrid";
-import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function PracticeScreen() {
   const { activeDeck } = useDecks();
-  const { progress, updateProgress } = useProgress();
+  const { progress, recordQuizResult } = useProgress();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isGridKey, setIsGridKey] = useState(0);
 
@@ -50,22 +51,19 @@ export function PracticeScreen() {
 
   const handleQuizComplete = (summary: { totalMistakes: number }) => {
     const isPerfect = summary.totalMistakes === 0;
-    
-    updateProgress(currentItem.char, {
-      completed: true,
-      attempts: charProgress.attempts + 1,
-      quizScore: charProgress.quizScore + (isPerfect ? 1 : 0),
-      quizTotal: charProgress.quizTotal + 1
-    });
+    const updated = recordQuizResult(currentItem.char, summary.totalMistakes);
 
     if (isPerfect) {
       toast.success("Perfect trace!", {
         icon: <CheckCircle2 className="w-4 h-4 text-primary" />,
+        description: updated?.interval
+          ? `Next review in ${updated.interval} day${updated.interval === 1 ? "" : "s"}.`
+          : undefined,
         className: "bg-primary/5 border-primary/20",
       });
     } else {
       toast("Practice makes perfect.", {
-        description: `${summary.totalMistakes} mistakes made.`
+        description: `${summary.totalMistakes} mistakes made. You'll see this one again soon.`
       });
     }
   };
@@ -77,17 +75,21 @@ export function PracticeScreen() {
       <div className="md:hidden flex overflow-x-auto p-4 gap-2 border-b border-border bg-white hide-scrollbar">
         {activeDeck.characters.map((item: Character, idx: number) => {
           const isDone = progress[item.char]?.completed;
+          const due = isDue(progress[item.char]);
           return (
             <button
               key={idx}
               onClick={() => { setCurrentIndex(idx); setIsGridKey(k => k + 1); }}
               className={`
-                flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-serif text-lg transition-colors
+                relative flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-serif text-lg transition-colors
                 ${idx === currentIndex ? "bg-primary text-primary-foreground shadow-sm" : 
                   isDone ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}
               `}
             >
               {item.char}
+              {due && isDone && idx !== currentIndex && (
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white" />
+              )}
             </button>
           );
         })}
@@ -99,6 +101,12 @@ export function PracticeScreen() {
             <h1 className="text-xl font-medium">{activeDeck.name}</h1>
             <p className="text-sm text-muted-foreground">{currentIndex + 1} of {activeDeck.characters.length}</p>
           </div>
+          {isDue(progress[currentItem.char]) && charProgress.completed && (
+            <div className="flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5">
+              <Clock className="w-3.5 h-3.5" />
+              Due for review
+            </div>
+          )}
         </div>
 
         <div className="w-full max-w-xl mx-auto flex flex-col items-center">
@@ -165,6 +173,7 @@ export function PracticeScreen() {
           {activeDeck.characters.map((item: Character, idx: number) => {
             const isDone = progress[item.char]?.completed;
             const isActive = idx === currentIndex;
+            const due = isDue(progress[item.char]);
             return (
               <button
                 key={idx}
@@ -175,10 +184,13 @@ export function PracticeScreen() {
                 `}
               >
                 <div className={`
-                  w-10 h-10 rounded-lg flex items-center justify-center font-serif text-xl mr-4
+                  relative w-10 h-10 rounded-lg flex items-center justify-center font-serif text-xl mr-4
                   ${isActive ? "bg-white/20" : isDone ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground group-hover:bg-background"}
                 `}>
                   {item.char}
+                  {due && isDone && !isActive && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white" />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className={`font-medium truncate ${isActive ? "text-primary-foreground" : "text-foreground"}`}>
@@ -188,7 +200,11 @@ export function PracticeScreen() {
                     {item.meaning}
                   </div>
                 </div>
-                {isDone && !isActive && <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />}
+                {isDone && !isActive && (
+                  due
+                    ? <Clock className="w-4 h-4 text-amber-500 shrink-0" />
+                    : <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                )}
               </button>
             );
           })}

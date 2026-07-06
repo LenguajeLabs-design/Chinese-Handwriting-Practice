@@ -1,3 +1,5 @@
+import { scheduleReview, isDue as isReviewDue } from "./srs";
+
 export interface Character {
   char: string;
   pinyin: string;
@@ -16,6 +18,11 @@ export interface Progress {
     attempts: number;
     quizScore: number;
     quizTotal: number;
+    interval?: number;
+    easeFactor?: number;
+    repetitions?: number;
+    dueDate?: number;
+    lastReviewed?: number;
   };
 }
 
@@ -57,6 +64,35 @@ export const store = {
     const current = progress[char] || { completed: false, attempts: 0, quizScore: 0, quizTotal: 0 };
     progress[char] = { ...current, ...update };
     store.saveProgress(progress);
+  },
+  recordQuizResult: (char: string, mistakes: number) => {
+    const progress = store.getProgress();
+    const current = progress[char] || { completed: false, attempts: 0, quizScore: 0, quizTotal: 0 };
+    const isPerfect = mistakes === 0;
+    const reviewState = scheduleReview(
+      {
+        interval: current.interval ?? 0,
+        easeFactor: current.easeFactor ?? 2.5,
+        repetitions: current.repetitions ?? 0,
+        dueDate: current.dueDate ?? 0,
+        lastReviewed: current.lastReviewed ?? 0,
+      },
+      mistakes
+    );
+    progress[char] = {
+      ...current,
+      completed: true,
+      attempts: current.attempts + 1,
+      quizScore: current.quizScore + (isPerfect ? 1 : 0),
+      quizTotal: current.quizTotal + 1,
+      ...reviewState,
+    };
+    store.saveProgress(progress);
+    return progress[char];
+  },
+  isCharacterDue: (char: string): boolean => {
+    const progress = store.getProgress();
+    return isReviewDue(progress[char]);
   },
   
   getDecks: (): Deck[] => {

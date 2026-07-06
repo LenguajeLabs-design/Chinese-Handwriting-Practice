@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import HanziWriter from "hanzi-writer";
 import { Button } from "@/components/ui/button";
 import { Play, PenTool, CheckCircle2, Eraser, Loader2 } from "lucide-react";
+import { WritingSoundEngine } from "@/lib/writingSound";
 
 interface PracticeGridProps {
   character: string;
@@ -12,8 +13,14 @@ interface PracticeGridProps {
 export function PracticeGrid({ character, onQuizComplete, size = 300 }: PracticeGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
   const writerRef = useRef<HanziWriter | null>(null);
+  const soundRef = useRef<WritingSoundEngine | null>(null);
+  const isPointerDownRef = useRef(false);
   const [isReady, setIsReady] = useState(false);
   const [mode, setMode] = useState<"view" | "quiz">("view");
+
+  if (!soundRef.current) {
+    soundRef.current = new WritingSoundEngine();
+  }
 
   useEffect(() => {
     if (!gridRef.current) return;
@@ -61,6 +68,45 @@ export function PracticeGrid({ character, onQuizComplete, size = 300 }: Practice
       el.removeEventListener("touchmove", preventTouch);
     };
   }, []);
+
+  // Subtle pencil-on-paper sound while writing, only during quiz/tracing
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el) return;
+    const sound = soundRef.current;
+    if (!sound) return;
+
+    const handlePointerDown = (e: PointerEvent) => {
+      if (mode !== "quiz") return;
+      isPointerDownRef.current = true;
+      sound.start(e.clientX, e.clientY);
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!isPointerDownRef.current) return;
+      sound.move(e.clientX, e.clientY);
+    };
+
+    const handlePointerUp = () => {
+      if (!isPointerDownRef.current) return;
+      isPointerDownRef.current = false;
+      sound.stop();
+    };
+
+    el.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
+
+    return () => {
+      el.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
+      sound.stop();
+      isPointerDownRef.current = false;
+    };
+  }, [mode]);
 
   const handleAnimate = () => {
     if (!writerRef.current) return;

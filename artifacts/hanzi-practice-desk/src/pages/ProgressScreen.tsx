@@ -1,7 +1,8 @@
 import React from "react";
 import { useProgress } from "@/hooks/use-data";
 import type { Progress } from "@/lib/store";
-import { BarChart3, TrendingUp, AlertCircle, Target } from "lucide-react";
+import { isDue, daysUntilDue } from "@/lib/srs";
+import { BarChart3, TrendingUp, AlertCircle, Target, Clock } from "lucide-react";
 
 export function ProgressScreen() {
   const { progress } = useProgress();
@@ -9,7 +10,9 @@ export function ProgressScreen() {
   const charStats = (Object.entries(progress) as [string, Progress[string]][]).map(([char, data]) => ({
     char,
     ...data,
-    accuracy: data.quizTotal > 0 ? Math.round((data.quizScore / data.quizTotal) * 100) : 0
+    accuracy: data.quizTotal > 0 ? Math.round((data.quizScore / data.quizTotal) * 100) : 0,
+    due: isDue(data),
+    daysUntilDue: daysUntilDue(data),
   }));
 
   const totalCompleted = charStats.filter(s => s.completed).length;
@@ -17,6 +20,7 @@ export function ProgressScreen() {
   const averageAccuracy = charStats.length > 0 
     ? Math.round(charStats.reduce((sum, s) => sum + s.accuracy, 0) / charStats.length)
     : 0;
+  const dueForReview = charStats.filter(s => s.completed && s.due);
 
   // Find difficult characters: low accuracy or high attempts without completion
   const difficultChars = charStats
@@ -45,7 +49,7 @@ export function ProgressScreen() {
         <p className="text-muted-foreground text-lg">Track your consistency and identify areas for improvement.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
         <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
           <div className="flex items-center text-muted-foreground mb-4">
             <Target className="w-5 h-5 mr-2 text-primary" />
@@ -69,7 +73,32 @@ export function ProgressScreen() {
           </div>
           <div className="text-4xl font-light tracking-tight">{averageAccuracy}%</div>
         </div>
+
+        <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+          <div className="flex items-center text-muted-foreground mb-4">
+            <Clock className="w-5 h-5 mr-2 text-amber-500" />
+            <span>Due for Review</span>
+          </div>
+          <div className="text-4xl font-light tracking-tight">{dueForReview.length}</div>
+        </div>
       </div>
+
+      {dueForReview.length > 0 && (
+        <div className="mb-12">
+          <h2 className="text-xl font-medium mb-6 flex items-center">
+            <Clock className="w-5 h-5 mr-2 text-amber-500" />
+            Due for Review
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {dueForReview.map((stat, idx) => (
+              <div key={idx} className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <div className="font-serif text-2xl text-foreground">{stat.char}</div>
+                <div className="text-xs text-amber-700 font-medium">Ready now</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {difficultChars.length > 0 && (
         <div className="mb-12">

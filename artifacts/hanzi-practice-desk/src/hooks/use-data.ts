@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { store, Progress, Deck } from "@/lib/store";
+import { isDue } from "@/lib/srs";
 
 export function useProgress() {
   const [progress, setProgress] = useState<Progress>({});
@@ -13,7 +14,15 @@ export function useProgress() {
     setProgress(store.getProgress());
   };
 
-  return { progress, updateProgress };
+  const recordQuizResult = (char: string, mistakes: number) => {
+    const updated = store.recordQuizResult(char, mistakes);
+    setProgress(store.getProgress());
+    return updated;
+  };
+
+  const isCharacterDue = (char: string): boolean => isDue(progress[char]);
+
+  return { progress, updateProgress, recordQuizResult, isCharacterDue };
 }
 
 export function useDecks() {
