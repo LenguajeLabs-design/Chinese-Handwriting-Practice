@@ -153,7 +153,7 @@ export function PracticeGrid({ character, onQuizComplete, size = 300 }: Practice
         )}
       </div>
 
-      <div className="flex flex-wrap justify-center gap-3">
+      <div className="flex flex-wrap justify-center gap-3 pb-6 md:pb-0">
         <Button 
           variant="outline" 
           size="lg" 
