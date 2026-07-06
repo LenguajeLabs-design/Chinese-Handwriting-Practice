@@ -43,49 +43,49 @@ export function ProgressScreen() {
   }
 
   return (
-    <div className="h-full p-6 md:p-12 max-w-4xl mx-auto overflow-y-auto">
-      <div className="mb-12">
-        <h1 className="text-3xl font-medium tracking-tight mb-2">Practice Progress</h1>
-        <p className="text-muted-foreground text-lg">Track your consistency and identify areas for improvement.</p>
+    <div className="h-full p-4 sm:p-6 md:p-12 max-w-4xl mx-auto overflow-y-auto">
+      <div className="mb-6 md:mb-12">
+        <h1 className="text-2xl md:text-3xl font-medium tracking-tight mb-1 md:mb-2">Practice Progress</h1>
+        <p className="text-muted-foreground text-sm md:text-lg">Track your consistency and identify areas for improvement.</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
-          <div className="flex items-center text-muted-foreground mb-4">
-            <Target className="w-5 h-5 mr-2 text-primary" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-12">
+        <div className="bg-white p-4 md:p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+          <div className="flex items-center text-muted-foreground mb-2 md:mb-4 text-xs md:text-base">
+            <Target className="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 text-primary shrink-0" />
             <span>Characters Mastered</span>
           </div>
-          <div className="text-4xl font-light tracking-tight">{totalCompleted}</div>
+          <div className="text-2xl md:text-4xl font-light tracking-tight">{totalCompleted}</div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
-          <div className="flex items-center text-muted-foreground mb-4">
-            <TrendingUp className="w-5 h-5 mr-2 text-primary" />
+        <div className="bg-white p-4 md:p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+          <div className="flex items-center text-muted-foreground mb-2 md:mb-4 text-xs md:text-base">
+            <TrendingUp className="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 text-primary shrink-0" />
             <span>Total Traces</span>
           </div>
-          <div className="text-4xl font-light tracking-tight">{totalAttempts}</div>
+          <div className="text-2xl md:text-4xl font-light tracking-tight">{totalAttempts}</div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
-          <div className="flex items-center text-muted-foreground mb-4">
-            <AlertCircle className="w-5 h-5 mr-2 text-primary" />
+        <div className="bg-white p-4 md:p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+          <div className="flex items-center text-muted-foreground mb-2 md:mb-4 text-xs md:text-base">
+            <AlertCircle className="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 text-primary shrink-0" />
             <span>Avg. Quiz Accuracy</span>
           </div>
-          <div className="text-4xl font-light tracking-tight">{averageAccuracy}%</div>
+          <div className="text-2xl md:text-4xl font-light tracking-tight">{averageAccuracy}%</div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
-          <div className="flex items-center text-muted-foreground mb-4">
-            <Clock className="w-5 h-5 mr-2 text-rose-400" />
+        <div className="bg-white p-4 md:p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+          <div className="flex items-center text-muted-foreground mb-2 md:mb-4 text-xs md:text-base">
+            <Clock className="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 text-rose-400 shrink-0" />
             <span>Due for Review</span>
           </div>
-          <div className="text-4xl font-light tracking-tight">{dueForReview.length}</div>
+          <div className="text-2xl md:text-4xl font-light tracking-tight">{dueForReview.length}</div>
         </div>
       </div>
 
       {dueForReview.length > 0 && (
-        <div className="mb-12">
-          <h2 className="text-xl font-medium mb-6 flex items-center">
+        <div className="mb-6 md:mb-12">
+          <h2 className="text-lg md:text-xl font-medium mb-3 md:mb-6 flex items-center">
             <Clock className="w-5 h-5 mr-2 text-rose-400" />
             Due for Review
           </h2>

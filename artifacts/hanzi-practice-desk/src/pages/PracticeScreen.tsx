@@ -71,32 +71,46 @@ export function PracticeScreen() {
   return (
     <div className="h-full flex flex-col md:flex-row relative">
       
-      {/* Mobile deck progress indicator */}
-      <div className="md:hidden flex overflow-x-auto p-4 gap-2 border-b border-border bg-white hide-scrollbar">
-        {activeDeck.characters.map((item: Character, idx: number) => {
-          const isDone = progress[item.char]?.completed;
-          const due = isDue(progress[item.char]);
-          return (
-            <button
-              key={idx}
-              onClick={() => { setCurrentIndex(idx); setIsGridKey(k => k + 1); }}
-              className={`
-                relative flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-serif text-lg transition-colors
-                ${idx === currentIndex ? "bg-primary text-primary-foreground shadow-sm" : 
-                  isDone ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}
-              `}
-            >
-              {item.char}
-              {due && isDone && idx !== currentIndex && (
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-400 ring-2 ring-white" />
-              )}
-            </button>
-          );
-        })}
+      {/* Mobile header + deck progress indicator */}
+      <div className="md:hidden border-b border-border bg-white">
+        <div className="flex items-center justify-between px-4 pt-4 pb-2">
+          <div>
+            <h1 className="text-base font-medium leading-tight">{activeDeck.name}</h1>
+            <p className="text-xs text-muted-foreground">{currentIndex + 1} of {activeDeck.characters.length}</p>
+          </div>
+          {isDue(progress[currentItem.char]) && charProgress.completed && (
+            <div className="flex items-center gap-1 text-[11px] font-medium text-rose-600 bg-rose-50 border border-rose-200 rounded-full px-2.5 py-1">
+              <Clock className="w-3 h-3" />
+              Due
+            </div>
+          )}
+        </div>
+        <div className="flex overflow-x-auto px-4 py-3 gap-2 hide-scrollbar">
+          {activeDeck.characters.map((item: Character, idx: number) => {
+            const isDone = progress[item.char]?.completed;
+            const due = isDue(progress[item.char]);
+            return (
+              <button
+                key={idx}
+                onClick={() => { setCurrentIndex(idx); setIsGridKey(k => k + 1); }}
+                className={`
+                  relative flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center font-serif text-base transition-colors
+                  ${idx === currentIndex ? "bg-primary text-primary-foreground shadow-sm" : 
+                    isDone ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}
+                `}
+              >
+                {item.char}
+                {due && isDone && idx !== currentIndex && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-400 ring-2 ring-white" />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative">
-        <div className="absolute top-6 left-6 right-6 flex justify-between items-center hidden md:flex">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-12 relative">
+        <div className="absolute top-6 left-6 right-6 hidden md:flex justify-between items-center">
           <div>
             <h1 className="text-xl font-medium">{activeDeck.name}</h1>
             <p className="text-sm text-muted-foreground">{currentIndex + 1} of {activeDeck.characters.length}</p>
@@ -119,8 +133,8 @@ export function PracticeScreen() {
               transition={{ duration: 0.2 }}
               className="w-full flex flex-col items-center"
             >
-              <div className="text-center mb-8 h-20 flex flex-col justify-end">
-                <div className="text-2xl text-primary font-medium tracking-wide mb-1">
+              <div className="text-center mb-4 md:mb-8 h-16 md:h-20 flex flex-col justify-end">
+                <div className="text-xl md:text-2xl text-primary font-medium tracking-wide mb-1">
                   {currentItem.pinyin}
                 </div>
                 <div className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">
@@ -131,12 +145,12 @@ export function PracticeScreen() {
               <PracticeGrid 
                 character={currentItem.char} 
                 onQuizComplete={handleQuizComplete}
-                size={Math.min(window.innerWidth - 64, 400)}
+                size={Math.min(window.innerWidth - 48, 400)}
               />
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex items-center justify-between w-full max-w-sm mt-12 px-4">
+          <div className="flex items-center justify-between w-full max-w-sm mt-6 md:mt-12 px-4">
             <Button
               variant="ghost"
               size="icon"

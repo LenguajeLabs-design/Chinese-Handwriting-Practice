@@ -54,16 +54,16 @@ export function CustomListScreen() {
   };
 
   return (
-    <div className="h-full p-6 md:p-12 max-w-4xl mx-auto overflow-y-auto">
-      <div className="mb-12">
-        <h1 className="text-3xl font-medium tracking-tight mb-2">Custom Lists</h1>
-        <p className="text-muted-foreground text-lg">Create new practice decks by pasting Chinese text.</p>
+    <div className="h-full p-4 sm:p-6 md:p-12 max-w-4xl mx-auto overflow-y-auto">
+      <div className="mb-6 md:mb-12">
+        <h1 className="text-2xl md:text-3xl font-medium tracking-tight mb-1 md:mb-2">Custom Lists</h1>
+        <p className="text-muted-foreground text-sm md:text-lg">Create new practice decks by pasting Chinese text.</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-12">
-        <div className="space-y-8">
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
-            <h2 className="text-xl font-medium mb-6 flex items-center">
+      <div className="grid md:grid-cols-2 gap-6 md:gap-12">
+        <div className="space-y-6 md:space-y-8">
+          <div className="bg-white rounded-2xl border border-border p-4 md:p-6 shadow-sm">
+            <h2 className="text-lg md:text-xl font-medium mb-4 md:mb-6 flex items-center">
               <Plus className="w-5 h-5 mr-2 text-primary" />
               New Deck
             </h2>
