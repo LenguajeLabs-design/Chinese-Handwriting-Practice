@@ -192,6 +192,33 @@ export function PracticeScreen() {
                 </div>
               </div>
 
+              <div
+                className="flex items-center justify-center gap-4 w-full mb-2"
+                style={{ maxWidth: Math.min(window.innerWidth - 48, 400) }}
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full w-10 h-10 disabled:opacity-30 shrink-0"
+                  onClick={handlePrev}
+                  disabled={currentIndex === 0}
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
+
+                <div className="flex-1" />
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full w-10 h-10 disabled:opacity-30 shrink-0"
+                  onClick={handleNext}
+                  disabled={currentIndex === activeDeck.characters.length - 1}
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </Button>
+              </div>
+
               <PracticeGrid 
                 character={currentItem.char} 
                 onQuizComplete={handleQuizComplete}
@@ -200,30 +227,10 @@ export function PracticeScreen() {
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex items-center justify-between w-full max-w-sm mt-6 md:mt-12 px-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full w-12 h-12 disabled:opacity-30"
-              onClick={handlePrev}
-              disabled={currentIndex === 0}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </Button>
-            
+          <div className="flex items-center justify-center w-full max-w-sm mt-6 md:mt-12 px-4">
             <div className="text-sm font-medium text-muted-foreground tabular-nums">
               {currentIndex + 1} / {activeDeck.characters.length}
             </div>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full w-12 h-12 disabled:opacity-30"
-              onClick={handleNext}
-              disabled={currentIndex === activeDeck.characters.length - 1}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </Button>
           </div>
         </div>
       </div>
