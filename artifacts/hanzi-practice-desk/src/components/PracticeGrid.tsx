@@ -150,7 +150,40 @@ export function PracticeGrid({ character, onQuizComplete, size = 300, autoStart 
   };
 
   return (
-    <div className="flex flex-col items-center gap-8 w-full max-w-md mx-auto">
+    <div className="flex flex-col items-center gap-4 md:gap-8 w-full max-w-md mx-auto">
+      <div className="flex flex-wrap justify-center gap-2 md:gap-3">
+        <Button 
+          variant="outline" 
+          size="lg" 
+          onClick={handleAnimate}
+          className="rounded-full px-4 md:px-6 h-10 md:h-12 text-sm md:text-base"
+          disabled={!isReady}
+        >
+          <Play className="w-4 h-4 mr-1.5 md:mr-2" />
+          Animate
+        </Button>
+        <Button 
+          variant="default" 
+          size="lg" 
+          onClick={handleQuiz}
+          className="rounded-full px-4 md:px-6 h-10 md:h-12 text-sm md:text-base bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+          disabled={!isReady || mode === "quiz"}
+        >
+          <PenTool className="w-4 h-4 mr-1.5 md:mr-2" />
+          {mode === "quiz" ? "Tracing..." : "Practice"}
+        </Button>
+        <Button 
+          variant="outline" 
+          size="lg"
+          onClick={handleClear}
+          className="rounded-full w-10 h-10 md:w-12 md:h-12 p-0"
+          title="Clear"
+          disabled={!isReady}
+        >
+          <Eraser className="w-4 h-4 md:w-5 md:h-5" />
+        </Button>
+      </div>
+
       <div 
         className="relative bg-white rounded-2xl shadow-sm border border-border overflow-hidden touch-none-all group"
         style={{ width: size, height: size }}
@@ -163,39 +196,6 @@ export function PracticeGrid({ character, onQuizComplete, size = 300, autoStart 
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         )}
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-3 pb-6 md:pb-0">
-        <Button 
-          variant="outline" 
-          size="lg" 
-          onClick={handleAnimate}
-          className="rounded-full px-6 h-12"
-          disabled={!isReady}
-        >
-          <Play className="w-4 h-4 mr-2" />
-          Animate
-        </Button>
-        <Button 
-          variant="default" 
-          size="lg" 
-          onClick={handleQuiz}
-          className="rounded-full px-6 h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-          disabled={!isReady || mode === "quiz"}
-        >
-          <PenTool className="w-4 h-4 mr-2" />
-          {mode === "quiz" ? "Tracing..." : "Practice"}
-        </Button>
-        <Button 
-          variant="outline" 
-          size="lg"
-          onClick={handleClear}
-          className="rounded-full w-12 h-12 p-0"
-          title="Clear"
-          disabled={!isReady}
-        >
-          <Eraser className="w-5 h-5" />
-        </Button>
       </div>
     </div>
   );
