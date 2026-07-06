@@ -8,9 +8,10 @@ interface PracticeGridProps {
   character: string;
   onQuizComplete?: (summary: { totalMistakes: number }) => void;
   size?: number;
+  autoStart?: boolean;
 }
 
-export function PracticeGrid({ character, onQuizComplete, size = 300 }: PracticeGridProps) {
+export function PracticeGrid({ character, onQuizComplete, size = 300, autoStart = true }: PracticeGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
   const writerRef = useRef<HanziWriter | null>(null);
   const soundRef = useRef<WritingSoundEngine | null>(null);
@@ -44,6 +45,17 @@ export function PracticeGrid({ character, onQuizComplete, size = 300 }: Practice
       showOutline: true,
       onLoadCharDataSuccess: () => {
         setIsReady(true);
+        if (autoStart) {
+          setMode("quiz");
+          writer.quiz({
+            onComplete: (summaryData) => {
+              if (onQuizComplete) {
+                onQuizComplete(summaryData);
+              }
+              setMode("view");
+            }
+          });
+        }
       }
     });
 
@@ -52,7 +64,7 @@ export function PracticeGrid({ character, onQuizComplete, size = 300 }: Practice
     return () => {
       // no explicit destroy needed for hanzi-writer, just clearing HTML works
     };
-  }, [character, size]);
+  }, [character, size, autoStart]);
 
   // Touch prevention for iPad
   useEffect(() => {
