@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Hanzi Practice Desk"
+version = "1.0.0"
+id = "artifacts/hanzi-practice-desk"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19625
+
+[services.development]
+run = "pnpm --filter @workspace/hanzi-practice-desk run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/hanzi-practice-desk", "run", "build" ]
+publicDir = "artifacts/hanzi-practice-desk/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19625"
+BASE_PATH = "/"

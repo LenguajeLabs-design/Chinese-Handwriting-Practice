@@ -1,0 +1,80 @@
+Build an iPad-first Chinese handwriting practice web app called “Hanzi Practice Desk.”
+
+Goal:
+Create a clean, elegant, minimal app for practicing simplified Chinese characters with Apple Pencil on iPad. The app should feel like HelloChinese handwriting practice, Apple Notes, and a premium language learning tool.
+
+Core requirements:
+1. Use React + Vite.
+2. Use Hanzi Writer for Chinese character stroke order, animation, tracing, and quiz mode.
+3. The app should be optimized for iPad Safari and Apple Pencil input.
+4. Use a large square character practice grid with:
+   - pale gray background
+   - center vertical and horizontal guide lines
+   - diagonal guide lines
+   - light gray character outline
+   - black active strokes
+5. Show the character’s pinyin above the grid.
+6. Show a small English meaning below or near the character card.
+7. Include buttons:
+   - Animate
+   - Trace
+   - Quiz
+   - Clear
+   - Previous
+   - Next
+8. Include a Today’s Practice list with 10 sample simplified Chinese characters.
+9. Include a Custom List screen where I can paste Chinese characters or words and generate a practice deck.
+10. Save progress locally using localStorage:
+   - completed characters
+   - number of attempts
+   - quiz scores if available
+   - difficult characters
+11. Design should be clean, premium, minimal, and touch-friendly.
+12. Use large buttons suitable for iPad.
+13. Avoid clutter, childish colors, cartoon graphics, flags, mascots, or school imagery.
+14. Make it installable as a PWA so I can add it to my iPad home screen.
+15. Include a simple manifest and mobile-friendly layout.
+
+Visual style:
+- white background
+- soft gray lines
+- black character strokes
+- warm yellow/gold accent buttons
+- rounded corners
+- Apple-like spacing
+- calm, focused interface
+- portrait iPad layout first, but responsive on desktop and phone
+
+Default practice list:
+我, 你, 他, 她, 是, 有, 不, 文, 病, 疼
+
+Data:
+Create a simple character data file with:
+character, pinyin, meaning
+
+Use this sample:
+我 | wǒ | I / me
+你 | nǐ | you
+他 | tā | he / him
+她 | tā | she / her
+是 | shì | to be
+有 | yǒu | to have
+不 | bù | not
+文 | wén | language / writing
+病 | bìng | illness
+疼 | téng | ache / pain
+
+Technical notes:
+- Use the Hanzi Writer library.
+- Create reusable components:
+  - App
+  - PracticeScreen
+  - CharacterGrid
+  - PracticeControls
+  - CharacterDeck
+  - CustomListInput
+  - ProgressPanel
+- Make sure Apple Pencil/touch input works smoothly.
+- Prevent unwanted page scrolling while writing on the grid.
+- Use localStorage for persistence.
+- Include clear setup instructions in README.md.

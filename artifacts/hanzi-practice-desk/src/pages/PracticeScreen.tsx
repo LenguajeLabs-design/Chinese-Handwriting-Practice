@@ -1,0 +1,199 @@
+import React, { useState, useEffect } from "react";
+import { useProgress, useDecks } from "@/hooks/use-data";
+import type { Character } from "@/lib/store";
+import { PracticeGrid } from "@/components/PracticeGrid";
+import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+
+export function PracticeScreen() {
+  const { activeDeck } = useDecks();
+  const { progress, updateProgress } = useProgress();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isGridKey, setIsGridKey] = useState(0);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [activeDeck?.id]);
+
+  if (!activeDeck || !activeDeck.characters.length) {
+    return (
+      <div className="h-full flex items-center justify-center p-6 text-center">
+        <div className="max-w-md space-y-4">
+          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+            <span className="font-serif text-2xl text-muted-foreground">空</span>
+          </div>
+          <h2 className="text-xl font-medium">This deck is empty</h2>
+          <p className="text-muted-foreground">Go to Custom Lists to create a new practice deck.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const currentItem = activeDeck.characters[currentIndex];
+  const charProgress = progress[currentItem.char] || { completed: false, attempts: 0, quizScore: 0, quizTotal: 0 };
+
+  const handleNext = () => {
+    if (currentIndex < activeDeck.characters.length - 1) {
+      setCurrentIndex(i => i + 1);
+      setIsGridKey(k => k + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(i => i - 1);
+      setIsGridKey(k => k + 1);
+    }
+  };
+
+  const handleQuizComplete = (summary: { totalMistakes: number }) => {
+    const isPerfect = summary.totalMistakes === 0;
+    
+    updateProgress(currentItem.char, {
+      completed: true,
+      attempts: charProgress.attempts + 1,
+      quizScore: charProgress.quizScore + (isPerfect ? 1 : 0),
+      quizTotal: charProgress.quizTotal + 1
+    });
+
+    if (isPerfect) {
+      toast.success("Perfect trace!", {
+        icon: <CheckCircle2 className="w-4 h-4 text-primary" />,
+        className: "bg-primary/5 border-primary/20",
+      });
+    } else {
+      toast("Practice makes perfect.", {
+        description: `${summary.totalMistakes} mistakes made.`
+      });
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col md:flex-row relative">
+      
+      {/* Mobile deck progress indicator */}
+      <div className="md:hidden flex overflow-x-auto p-4 gap-2 border-b border-border bg-white hide-scrollbar">
+        {activeDeck.characters.map((item: Character, idx: number) => {
+          const isDone = progress[item.char]?.completed;
+          return (
+            <button
+              key={idx}
+              onClick={() => { setCurrentIndex(idx); setIsGridKey(k => k + 1); }}
+              className={`
+                flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-serif text-lg transition-colors
+                ${idx === currentIndex ? "bg-primary text-primary-foreground shadow-sm" : 
+                  isDone ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}
+              `}
+            >
+              {item.char}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative">
+        <div className="absolute top-6 left-6 right-6 flex justify-between items-center hidden md:flex">
+          <div>
+            <h1 className="text-xl font-medium">{activeDeck.name}</h1>
+            <p className="text-sm text-muted-foreground">{currentIndex + 1} of {activeDeck.characters.length}</p>
+          </div>
+        </div>
+
+        <div className="w-full max-w-xl mx-auto flex flex-col items-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentItem.char + isGridKey}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="w-full flex flex-col items-center"
+            >
+              <div className="text-center mb-8 h-20 flex flex-col justify-end">
+                <div className="text-2xl text-primary font-medium tracking-wide mb-1">
+                  {currentItem.pinyin}
+                </div>
+                <div className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">
+                  {currentItem.meaning}
+                </div>
+              </div>
+
+              <PracticeGrid 
+                character={currentItem.char} 
+                onQuizComplete={handleQuizComplete}
+                size={Math.min(window.innerWidth - 64, 400)}
+              />
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="flex items-center justify-between w-full max-w-sm mt-12 px-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full w-12 h-12 disabled:opacity-30"
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </Button>
+            
+            <div className="text-sm font-medium text-muted-foreground tabular-nums">
+              {currentIndex + 1} / {activeDeck.characters.length}
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full w-12 h-12 disabled:opacity-30"
+              onClick={handleNext}
+              disabled={currentIndex === activeDeck.characters.length - 1}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Sidebar List */}
+      <div className="hidden md:block w-72 border-l border-border bg-white h-full overflow-y-auto">
+        <div className="p-6 sticky top-0 bg-white/80 backdrop-blur-md z-10 border-b border-border/50">
+          <h3 className="font-medium">Character List</h3>
+        </div>
+        <div className="p-4 space-y-2">
+          {activeDeck.characters.map((item: Character, idx: number) => {
+            const isDone = progress[item.char]?.completed;
+            const isActive = idx === currentIndex;
+            return (
+              <button
+                key={idx}
+                onClick={() => { setCurrentIndex(idx); setIsGridKey(k => k + 1); }}
+                className={`
+                  w-full flex items-center p-3 rounded-xl transition-all text-left group
+                  ${isActive ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted bg-transparent"}
+                `}
+              >
+                <div className={`
+                  w-10 h-10 rounded-lg flex items-center justify-center font-serif text-xl mr-4
+                  ${isActive ? "bg-white/20" : isDone ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground group-hover:bg-background"}
+                `}>
+                  {item.char}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className={`font-medium truncate ${isActive ? "text-primary-foreground" : "text-foreground"}`}>
+                    {item.pinyin}
+                  </div>
+                  <div className={`text-xs truncate ${isActive ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                    {item.meaning}
+                  </div>
+                </div>
+                {isDone && !isActive && <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
