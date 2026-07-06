@@ -1,12 +1,13 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { BookA, PenLine, BarChart3, Settings2 } from "lucide-react";
+import { BookA, PenLine, BarChart3, GraduationCap } from "lucide-react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
 
   const navItems = [
     { href: "/", icon: PenLine, label: "Practice" },
+    { href: "/decks", icon: GraduationCap, label: "HSK Decks" },
     { href: "/custom", icon: BookA, label: "Custom Lists" },
     { href: "/progress", icon: BarChart3, label: "Progress" },
   ];

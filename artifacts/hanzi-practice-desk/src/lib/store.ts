@@ -4,13 +4,35 @@ export interface Character {
   char: string;
   pinyin: string;
   meaning: string;
+  word?: string;
+  charIndex?: number;
+  charTotal?: number;
+  vocabId?: string;
 }
 
 export interface Deck {
   id: string;
   name: string;
   characters: Character[];
+  hskLevel?: number;
+  hskDeckIndex?: number;
 }
+
+export interface HskState {
+  currentLevel: number;
+  currentDeckByLevel: Record<number, number>;
+  completedDecks: string[];
+  dailyPracticeHistory: { date: string; count: number }[];
+  lastPracticeDate: string | null;
+}
+
+export const DEFAULT_HSK_STATE: HskState = {
+  currentLevel: 1,
+  currentDeckByLevel: {},
+  completedDecks: [],
+  dailyPracticeHistory: [],
+  lastPracticeDate: null,
+};
 
 export interface Progress {
   [char: string]: {
@@ -45,6 +67,7 @@ export const defaultDeck: Deck = {
 
 const PROGRESS_KEY = "hanzi_progress";
 const DECKS_KEY = "hanzi_decks";
+const HSK_STATE_KEY = "hanzi_hsk_state";
 const ACTIVE_DECK_KEY = "hanzi_active_deck";
 
 export const store = {
@@ -118,5 +141,51 @@ export const store = {
   },
   setActiveDeckId: (id: string) => {
     localStorage.setItem(ACTIVE_DECK_KEY, id);
-  }
+  },
+
+  getHskState: (): HskState => {
+    try {
+      const data = localStorage.getItem(HSK_STATE_KEY);
+      if (data) {
+        return { ...DEFAULT_HSK_STATE, ...JSON.parse(data) };
+      }
+    } catch {}
+    return { ...DEFAULT_HSK_STATE };
+  },
+  saveHskState: (state: HskState) => {
+    localStorage.setItem(HSK_STATE_KEY, JSON.stringify(state));
+  },
+  setCurrentLevel: (level: number) => {
+    const state = store.getHskState();
+    state.currentLevel = level;
+    store.saveHskState(state);
+    return state;
+  },
+  setCurrentDeckForLevel: (level: number, deckIndex: number) => {
+    const state = store.getHskState();
+    state.currentDeckByLevel = { ...state.currentDeckByLevel, [level]: deckIndex };
+    store.saveHskState(state);
+    return state;
+  },
+  markDeckCompleted: (deckId: string) => {
+    const state = store.getHskState();
+    if (!state.completedDecks.includes(deckId)) {
+      state.completedDecks = [...state.completedDecks, deckId];
+      store.saveHskState(state);
+    }
+    return state;
+  },
+  recordDailyPractice: (count: number, now: Date = new Date()) => {
+    const state = store.getHskState();
+    const dateKey = now.toISOString().slice(0, 10);
+    const existing = state.dailyPracticeHistory.find(d => d.date === dateKey);
+    if (existing) {
+      existing.count += count;
+    } else {
+      state.dailyPracticeHistory = [...state.dailyPracticeHistory, { date: dateKey, count }];
+    }
+    state.lastPracticeDate = dateKey;
+    store.saveHskState(state);
+    return state;
+  },
 };

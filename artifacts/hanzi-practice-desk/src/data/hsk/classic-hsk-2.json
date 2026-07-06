@@ -1,0 +1,12 @@
+[
+  { "id": "hsk2-001", "level": 2, "word": "工作", "characters": ["工", "作"], "pinyin": "gōngzuò", "meaning": "to work / job", "tags": ["verb", "noun"], "source": "classic-hsk" },
+  { "id": "hsk2-002", "level": 2, "word": "时间", "characters": ["时", "间"], "pinyin": "shíjiān", "meaning": "time", "tags": ["noun"], "source": "classic-hsk" },
+  { "id": "hsk2-003", "level": 2, "word": "问题", "characters": ["问", "题"], "pinyin": "wèntí", "meaning": "problem / question", "tags": ["noun"], "source": "classic-hsk" },
+  { "id": "hsk2-004", "level": 2, "word": "知道", "characters": ["知", "道"], "pinyin": "zhīdào", "meaning": "to know", "tags": ["verb"], "source": "classic-hsk" },
+  { "id": "hsk2-005", "level": 2, "word": "觉得", "characters": ["觉", "得"], "pinyin": "juéde", "meaning": "to feel / think", "tags": ["verb"], "source": "classic-hsk" },
+  { "id": "hsk2-006", "level": 2, "word": "希望", "characters": ["希", "望"], "pinyin": "xīwàng", "meaning": "to hope", "tags": ["verb"], "source": "classic-hsk" },
+  { "id": "hsk2-007", "level": 2, "word": "开始", "characters": ["开", "始"], "pinyin": "kāishǐ", "meaning": "to begin", "tags": ["verb"], "source": "classic-hsk" },
+  { "id": "hsk2-008", "level": 2, "word": "已经", "characters": ["已", "经"], "pinyin": "yǐjīng", "meaning": "already", "tags": ["adverb"], "source": "classic-hsk" },
+  { "id": "hsk2-009", "level": 2, "word": "地方", "characters": ["地", "方"], "pinyin": "dìfāng", "meaning": "place", "tags": ["noun"], "source": "classic-hsk" },
+  { "id": "hsk2-010", "level": 2, "word": "旅游", "characters": ["旅", "游"], "pinyin": "lǚyóu", "meaning": "to travel", "tags": ["verb"], "source": "classic-hsk" }
+]

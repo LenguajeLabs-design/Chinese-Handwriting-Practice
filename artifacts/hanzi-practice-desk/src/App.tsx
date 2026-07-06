@@ -7,6 +7,7 @@ import { Layout } from "@/components/Layout";
 import { PracticeScreen } from "@/pages/PracticeScreen";
 import { CustomListScreen } from "@/pages/CustomListScreen";
 import { ProgressScreen } from "@/pages/ProgressScreen";
+import { DecksScreen } from "@/pages/DecksScreen";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ function Router() {
     <Layout>
       <Switch>
         <Route path="/" component={PracticeScreen} />
+        <Route path="/decks" component={DecksScreen} />
         <Route path="/custom" component={CustomListScreen} />
         <Route path="/progress" component={ProgressScreen} />
         <Route component={NotFound} />

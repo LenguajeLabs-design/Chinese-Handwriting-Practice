@@ -1,22 +1,67 @@
 import React, { useState, useEffect } from "react";
-import { useProgress, useDecks } from "@/hooks/use-data";
+import { useLocation } from "wouter";
+import { useProgress, useDecks, useHsk } from "@/hooks/use-data";
 import type { Character } from "@/lib/store";
 import { isDue } from "@/lib/srs";
 import { PracticeGrid } from "@/components/PracticeGrid";
+import { DeckCompletion } from "@/components/hsk/DeckCompletion";
 import { ChevronLeft, ChevronRight, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function PracticeScreen() {
+  const [, setLocation] = useLocation();
   const { activeDeck } = useDecks();
   const { progress, recordQuizResult } = useProgress();
+  const { hskState, markDeckCompleted, nextDeckIndex, setCurrentDeckForLevel, startDeck, checkDeckCompletion } = useHsk();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isGridKey, setIsGridKey] = useState(0);
+  const [showCompletion, setShowCompletion] = useState(false);
 
   useEffect(() => {
     setCurrentIndex(0);
+    setShowCompletion(false);
   }, [activeDeck?.id]);
+
+  const isHskDeck = activeDeck?.hskLevel !== undefined;
+
+  useEffect(() => {
+    if (!activeDeck || !isHskDeck) return;
+    if (checkDeckCompletion(activeDeck, progress)) {
+      if (!hskState.completedDecks.includes(activeDeck.id)) {
+        markDeckCompleted(activeDeck.id);
+      }
+      setShowCompletion(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress, activeDeck?.id]);
+
+  if (activeDeck && isHskDeck && showCompletion) {
+    const level = activeDeck.hskLevel!;
+    const deckIndex = activeDeck.hskDeckIndex!;
+    const upcomingIndex = nextDeckIndex(level);
+    const hasNextDeck = upcomingIndex > deckIndex;
+
+    return (
+      <DeckCompletion
+        deckName={activeDeck.name}
+        hasNextDeck={hasNextDeck}
+        onContinue={() => {
+          setCurrentDeckForLevel(level, upcomingIndex);
+          startDeck(level, upcomingIndex);
+          setShowCompletion(false);
+        }}
+        onReviewDifficult={() => {
+          setLocation("/decks");
+        }}
+        onPracticeFromMemory={() => {
+          startDeck(level, deckIndex);
+          setShowCompletion(false);
+        }}
+      />
+    );
+  }
 
   if (!activeDeck || !activeDeck.characters.length) {
     return (
@@ -134,6 +179,11 @@ export function PracticeScreen() {
               className="w-full flex flex-col items-center"
             >
               <div className="text-center mb-4 md:mb-8 h-16 md:h-20 flex flex-col justify-end">
+                {currentItem.word && currentItem.charTotal && currentItem.charTotal > 1 && (
+                  <div className="text-xs font-medium text-muted-foreground mb-1.5">
+                    Word: {currentItem.word} &middot; Character {(currentItem.charIndex ?? 0) + 1} of {currentItem.charTotal}
+                  </div>
+                )}
                 <div className="text-xl md:text-2xl text-primary font-medium tracking-wide mb-1">
                   {currentItem.pinyin}
                 </div>

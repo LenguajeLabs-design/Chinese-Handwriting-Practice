@@ -1,0 +1,114 @@
+We now need to expand the app from a 10-character demo into an HSK-based deck system.
+
+Goal:
+Create a deck-based Chinese handwriting practice system based on Classic HSK levels 1–6.
+
+Important:
+Do not make the app read PDF files directly. Instead, create clean JSON data files that the app can use. We will later paste or import cleaned vocabulary from the PDFs.
+
+Create this data structure:
+
+src/data/hsk/classic-hsk-1.json
+src/data/hsk/classic-hsk-2.json
+src/data/hsk/classic-hsk-3.json
+src/data/hsk/classic-hsk-4.json
+src/data/hsk/classic-hsk-5.json
+src/data/hsk/classic-hsk-6.json
+
+Each vocabulary item should use this shape:
+
+{
+  "id": "hsk1-001",
+  "level": 1,
+  "word": "你",
+  "characters": ["你"],
+  "pinyin": "nǐ",
+  "meaning": "you",
+  "tags": ["pronoun"],
+  "source": "classic-hsk"
+}
+
+For multi-character words, use this shape:
+
+{
+  "id": "hsk1-020",
+  "level": 1,
+  "word": "中国",
+  "characters": ["中", "国"],
+  "pinyin": "Zhōngguó",
+  "meaning": "China",
+  "tags": ["place", "country"],
+  "source": "classic-hsk"
+}
+
+Build the following features:
+
+1. HSK Level Selector
+- User can choose HSK 1, 2, 3, 4, 5, or 6.
+- Show progress for each level.
+
+2. Deck Builder
+- Automatically split each HSK level into decks of 10 vocabulary items.
+- Name them:
+  HSK 1 Deck 1
+  HSK 1 Deck 2
+  HSK 1 Deck 3
+- Keep the deck size configurable.
+
+3. Today’s Practice
+- Generate a daily practice set of 10 items.
+- Use this mix:
+  7 new items from the current deck
+  3 review items from difficult or previously attempted characters
+- If there are not enough review items, fill with new items.
+
+4. Progress Tracking
+Use localStorage to save:
+- currentLevel
+- currentDeckByLevel
+- completedDecks
+- attemptedCharacters
+- difficultCharacters
+- completedCharacters
+- dailyPracticeHistory
+- lastPracticeDate
+
+5. Completion Flow
+When the user completes a deck:
+- show a friendly completion screen
+- unlock the next deck
+- offer three choices:
+  Continue to next deck
+  Review difficult characters
+  Practice from memory
+
+6. Character Practice From Words
+Because Hanzi Writer practices one character at a time:
+- If the item is one character, practice that character.
+- If the item is a word with multiple characters, practice each character in sequence.
+- Show:
+  Word: 中国
+  Character 1 of 2: 中
+  Character 2 of 2: 国
+
+7. UI
+Add:
+- DeckBrowser component
+- LevelSelector component
+- TodayPractice component
+- DeckCompletion component
+- ProgressPanel component
+
+Design:
+- Keep the visual design minimal, premium, iPad-first, and Apple-like.
+- Use calm spacing.
+- Do not clutter the practice screen.
+- Make buttons large enough for touch.
+- Keep the writing grid as the main focus.
+
+Use placeholder HSK data for now:
+- Put at least 30 sample items in HSK 1 so we can test three decks.
+- Put 10 sample items in HSK 2 so we can test level switching.
+- Leave HSK 3–6 files created but with a few placeholder items or empty arrays.
+
+After this is working, I will replace the placeholder data with cleaned vocabulary from my HSK PDFs.
