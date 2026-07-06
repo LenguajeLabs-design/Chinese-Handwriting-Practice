@@ -199,11 +199,11 @@ export function PracticeScreen() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full w-10 h-10 disabled:opacity-30 shrink-0"
+                  className="rounded-full w-14 h-14 disabled:opacity-30 shrink-0"
                   onClick={handlePrev}
                   disabled={currentIndex === 0}
                 >
-                  <ChevronLeft className="w-6 h-6" />
+                  <ChevronLeft className="w-9 h-9" />
                 </Button>
 
                 <div className="flex-1" />
@@ -211,11 +211,11 @@ export function PracticeScreen() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full w-10 h-10 disabled:opacity-30 shrink-0"
+                  className="rounded-full w-14 h-14 disabled:opacity-30 shrink-0"
                   onClick={handleNext}
                   disabled={currentIndex === activeDeck.characters.length - 1}
                 >
-                  <ChevronRight className="w-6 h-6" />
+                  <ChevronRight className="w-9 h-9" />
                 </Button>
               </div>
 
