@@ -5,6 +5,7 @@ import {
   HSK_LEVELS,
   buildDecksForLevel,
   getHskDeck,
+  getAllHskDecks,
   isDeckCompleted,
   levelProgress,
   generateTodaysPractice,
@@ -33,18 +34,22 @@ export function useProgress() {
   return { progress, updateProgress, recordQuizResult, isCharacterDue };
 }
 
+function getAllDecks(): Deck[] {
+  return [...store.getDecks(), ...getAllHskDecks()];
+}
+
 export function useDecks() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [activeDeckId, setActiveDeckId] = useState<string>("");
 
   useEffect(() => {
-    setDecks(store.getDecks());
+    setDecks(getAllDecks());
     setActiveDeckId(store.getActiveDeckId());
   }, []);
 
   const addDeck = (deck: Deck) => {
     store.addDeck(deck);
-    setDecks(store.getDecks());
+    setDecks(getAllDecks());
   };
 
   const setActive = (id: string) => {

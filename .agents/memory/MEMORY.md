@@ -1,0 +1,1 @@
+- [Computed-on-the-fly deck/entity lists](computed-entity-lists.md) — entities built dynamically from static data (not persisted) must be merged into the same read path as persisted entities, or lookups by id silently fall back to defaults.
