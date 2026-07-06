@@ -88,7 +88,7 @@ export function PracticeScreen() {
             >
               {item.char}
               {due && isDone && idx !== currentIndex && (
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white" />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-400 ring-2 ring-white" />
               )}
             </button>
           );
@@ -102,7 +102,7 @@ export function PracticeScreen() {
             <p className="text-sm text-muted-foreground">{currentIndex + 1} of {activeDeck.characters.length}</p>
           </div>
           {isDue(progress[currentItem.char]) && charProgress.completed && (
-            <div className="flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-rose-600 bg-rose-50 border border-rose-200 rounded-full px-3 py-1.5">
               <Clock className="w-3.5 h-3.5" />
               Due for review
             </div>
@@ -189,7 +189,7 @@ export function PracticeScreen() {
                 `}>
                   {item.char}
                   {due && isDone && !isActive && (
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white" />
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-400 ring-2 ring-white" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -202,7 +202,7 @@ export function PracticeScreen() {
                 </div>
                 {isDone && !isActive && (
                   due
-                    ? <Clock className="w-4 h-4 text-amber-500 shrink-0" />
+                    ? <Clock className="w-4 h-4 text-rose-400 shrink-0" />
                     : <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
                 )}
               </button>

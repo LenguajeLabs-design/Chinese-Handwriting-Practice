@@ -76,7 +76,7 @@ export function ProgressScreen() {
 
         <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
           <div className="flex items-center text-muted-foreground mb-4">
-            <Clock className="w-5 h-5 mr-2 text-amber-500" />
+            <Clock className="w-5 h-5 mr-2 text-rose-400" />
             <span>Due for Review</span>
           </div>
           <div className="text-4xl font-light tracking-tight">{dueForReview.length}</div>
@@ -86,14 +86,14 @@ export function ProgressScreen() {
       {dueForReview.length > 0 && (
         <div className="mb-12">
           <h2 className="text-xl font-medium mb-6 flex items-center">
-            <Clock className="w-5 h-5 mr-2 text-amber-500" />
+            <Clock className="w-5 h-5 mr-2 text-rose-400" />
             Due for Review
           </h2>
           <div className="flex flex-wrap gap-3">
             {dueForReview.map((stat, idx) => (
-              <div key={idx} className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+              <div key={idx} className="flex items-center gap-3 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
                 <div className="font-serif text-2xl text-foreground">{stat.char}</div>
-                <div className="text-xs text-amber-700 font-medium">Ready now</div>
+                <div className="text-xs text-rose-600 font-medium">Ready now</div>
               </div>
             ))}
           </div>

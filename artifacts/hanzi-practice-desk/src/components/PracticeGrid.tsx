@@ -36,10 +36,10 @@ export function PracticeGrid({ character, onQuizComplete, size = 300 }: Practice
       padding: 16,
       strokeAnimationSpeed: 1.5,
       delayBetweenStrokes: 150,
-      strokeColor: '#1c1917', // dark ink
-      radicalColor: '#d97706', // gold
-      outlineColor: '#e7e5e4', // very light gray outline
-      drawingColor: '#1c1917',
+      strokeColor: '#152233', // deep ink navy
+      radicalColor: '#1e6b83', // deep teal
+      outlineColor: '#e2e8ec', // cool light gray outline
+      drawingColor: '#152233',
       drawingWidth: 16,
       showOutline: true,
       onLoadCharDataSuccess: () => {
