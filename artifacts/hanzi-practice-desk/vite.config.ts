@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+import { VitePWA } from "vite-plugin-pwa";
 
 const rawPort = process.env.PORT;
 
@@ -32,6 +33,37 @@ export default defineConfig({
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
+    VitePWA({
+      registerType: "autoUpdate",
+      injectRegister: "auto",
+      // Use the existing public/manifest.json rather than generating one
+      manifest: false,
+      workbox: {
+        // Precache all compiled app assets
+        globPatterns: ["**/*.{js,css,html,svg,png,jpg,ico,woff,woff2,json}"],
+        // Runtime caching for hanzi-writer character stroke data (CDN)
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/npm\/hanzi-writer-data/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "hanzi-char-data-v1",
+              expiration: {
+                maxEntries: 10000,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
+      devOptions: {
+        // Keep SW disabled in dev — it interferes with HMR
+        enabled: false,
+      },
+    }),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useProgress, useDecks, useHsk } from "@/hooks/use-data";
+import { useOfflinePrecache } from "@/hooks/use-offline-precache";
 import type { Character } from "@/lib/store";
 import { isDue } from "@/lib/srs";
 import { PracticeGrid } from "@/components/PracticeGrid";
@@ -25,6 +26,9 @@ export function PracticeScreen() {
   }, [activeDeck?.id]);
 
   const isHskDeck = activeDeck?.hskLevel !== undefined;
+
+  // Pre-warm the service worker cache with all character stroke data for this deck
+  useOfflinePrecache(activeDeck?.characters ?? []);
 
   useEffect(() => {
     if (!activeDeck || !isHskDeck) return;
