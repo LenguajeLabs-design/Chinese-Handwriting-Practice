@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useDecks } from "@/hooks/use-data";
 import { Button } from "@/components/ui/button";
@@ -8,16 +8,7 @@ import { Label } from "@/components/ui/label";
 import { BookA, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Deck, Character } from "@/lib/store";
-
-// Very basic fallback pinyin/meaning if missing (we would ideally have an API for this, 
-// but since no backend is allowed, we just provide placeholders)
-function generatePlaceholders(chars: string[]): Character[] {
-  return chars.map(char => ({
-    char,
-    pinyin: "???",
-    meaning: "Custom character"
-  }));
-}
+import { lookupChar } from "@/lib/dict";
 
 export function CustomListScreen() {
   const [, setLocation] = useLocation();
@@ -25,18 +16,27 @@ export function CustomListScreen() {
   const [inputText, setInputText] = useState("");
   const [deckName, setDeckName] = useState("");
 
+  // Extract unique Chinese characters from the pasted text and look each one up
+  const previewChars = useMemo<Character[]>(() => {
+    const unique = Array.from(new Set(
+      inputText.match(/[\u4e00-\u9fa5]/g) ?? []
+    ));
+    return unique.map(char => {
+      const info = lookupChar(char);
+      return {
+        char,
+        pinyin: info.pinyin || "—",
+        meaning: info.meaning || "",
+      };
+    });
+  }, [inputText]);
+
   const handleCreateDeck = () => {
     if (!deckName.trim()) {
       toast.error("Please enter a deck name");
       return;
     }
-
-    // Extract unique chinese characters
-    const chars = Array.from(new Set(
-      inputText.match(/[\u4e00-\u9fa5]/g) || []
-    ));
-
-    if (chars.length === 0) {
+    if (previewChars.length === 0) {
       toast.error("No valid Chinese characters found in input.");
       return;
     }
@@ -44,12 +44,12 @@ export function CustomListScreen() {
     const newDeck: Deck = {
       id: "deck_" + Date.now(),
       name: deckName.trim(),
-      characters: generatePlaceholders(chars)
+      characters: previewChars,
     };
 
     addDeck(newDeck);
     setActive(newDeck.id);
-    toast.success(`Deck created with ${chars.length} characters.`);
+    toast.success(`Deck created with ${previewChars.length} characters.`);
     setLocation("/");
   };
 
@@ -87,14 +87,32 @@ export function CustomListScreen() {
                   placeholder="Paste characters or full sentences here... Punctuation and non-Chinese characters will be ignored."
                   value={inputText}
                   onChange={e => setInputText(e.target.value)}
-                  className="min-h-[200px] resize-none bg-muted/50 border-transparent focus-visible:bg-white text-lg"
+                  className="min-h-[160px] resize-none bg-muted/50 border-transparent focus-visible:bg-white text-lg"
                 />
               </div>
+
+              {/* Live preview of detected characters */}
+              {previewChars.length > 0 && (
+                <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-1.5 max-h-52 overflow-y-auto">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                    {previewChars.length} characters detected
+                  </p>
+                  {previewChars.map(({ char, pinyin: py, meaning }) => (
+                    <div key={char} className="flex items-center gap-3 py-1 border-b border-border/40 last:border-0">
+                      <span className="font-serif text-xl w-7 text-center shrink-0">{char}</span>
+                      <span className="text-sm text-primary font-medium w-20 shrink-0">{py}</span>
+                      <span className="text-xs text-muted-foreground truncate">
+                        {meaning || <span className="italic opacity-50">no meaning on file</span>}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <Button 
                 onClick={handleCreateDeck}
                 className="w-full h-12 text-base rounded-xl"
-                disabled={!inputText.trim()}
+                disabled={previewChars.length === 0}
               >
                 Create Practice Deck
               </Button>
