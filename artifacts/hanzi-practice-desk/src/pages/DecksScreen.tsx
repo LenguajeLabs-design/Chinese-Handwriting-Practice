@@ -11,7 +11,14 @@ import { toast } from "sonner";
 export function DecksScreen() {
   const [, setLocation] = useLocation();
   const { progress } = useProgress();
-  const { hskState, levels, setCurrentLevel, getLevelProgress, startDeck, startTodaysPractice } = useHsk();
+  const {
+    hskState,
+    levels,
+    setCurrentLevel,
+    getLevelProgress,
+    startDeck,
+    startTodaysPractice,
+  } = useHsk();
 
   const currentLevel = hskState.currentLevel;
   const decks = buildDecksForLevel(currentLevel);
@@ -26,42 +33,74 @@ export function DecksScreen() {
 
   const handleStartTodaysPractice = () => {
     const deck = startTodaysPractice(progress);
-    toast.success("Today's practice is ready", { description: `${deck.characters.length} characters selected for you.` });
+    toast.success("Today's practice is ready", {
+      description: `${deck.characters.length} characters selected for you.`,
+    });
     setLocation("/");
   };
 
   return (
-    <div className="h-full p-4 sm:p-6 md:p-12 max-w-4xl mx-auto overflow-y-auto">
-      <div className="mb-6 md:mb-10">
-        <h1 className="text-2xl md:text-3xl font-medium tracking-tight mb-1 md:mb-2">HSK Decks</h1>
-        <p className="text-muted-foreground text-sm md:text-lg">Practice vocabulary organized by Classic HSK level.</p>
-      </div>
+    <div className="h-full overflow-y-auto">
+      <div className="app-page">
+        <div className="app-hero mb-6 md:mb-8">
+          <p className="eyebrow mb-2">Structured Study</p>
+          <h1 className="section-title mb-2">HSK Decks</h1>
+          <p className="section-copy max-w-2xl">
+            Work through Classic HSK vocabulary in calm, touch-friendly decks.
+            Start with today&apos;s suggested practice or jump to a level and
+            continue where you left off.
+          </p>
+        </div>
 
-      <div className="mb-6 md:mb-8">
-        <TodayPractice onStart={handleStartTodaysPractice} />
-      </div>
+        <div className="mb-6 md:mb-8">
+          <TodayPractice onStart={handleStartTodaysPractice} />
+        </div>
 
-      <div className="mb-6 md:mb-8">
-        <LevelSelector
-          levels={levels}
-          currentLevel={currentLevel}
-          onSelect={setCurrentLevel}
-          getLevelStats={level => getLevelProgress(level, progress)}
-        />
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-        <div className="md:col-span-2">
-          <h2 className="text-lg font-medium mb-4">HSK {currentLevel} Decks</h2>
-          <DeckBrowser
-            decks={decks}
-            progress={progress}
-            completedDecks={hskState.completedDecks}
-            onSelectDeck={handleSelectDeck}
+        <div className="mb-6 md:mb-8">
+          <div className="flex items-end justify-between gap-4 mb-4">
+            <div>
+              <p className="eyebrow mb-2">Choose A Level</p>
+              <h2 className="text-xl font-medium">Your deck path</h2>
+            </div>
+            <div className="hidden md:block text-sm text-muted-foreground">
+              Current level: HSK {currentLevel}
+            </div>
+          </div>
+          <LevelSelector
+            levels={levels}
+            currentLevel={currentLevel}
+            onSelect={setCurrentLevel}
+            getLevelStats={(level) => getLevelProgress(level, progress)}
           />
         </div>
-        <div>
-          <ProgressPanel levels={levels} getLevelStats={level => getLevelProgress(level, progress)} />
+
+        <div className="grid xl:grid-cols-[minmax(0,1fr)_320px] gap-6 md:gap-8 items-start">
+          <div className="app-surface-strong p-4 md:p-6">
+            <div className="flex items-end justify-between gap-4 mb-5">
+              <div>
+                <p className="eyebrow mb-2">Active Track</p>
+                <h2 className="text-xl font-medium">
+                  HSK {currentLevel} Decks
+                </h2>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {decks.length} deck{decks.length === 1 ? "" : "s"}
+              </div>
+            </div>
+            <DeckBrowser
+              decks={decks}
+              progress={progress}
+              completedDecks={hskState.completedDecks}
+              onSelectDeck={handleSelectDeck}
+            />
+          </div>
+
+          <div>
+            <ProgressPanel
+              levels={levels}
+              getLevelStats={(level) => getLevelProgress(level, progress)}
+            />
+          </div>
         </div>
       </div>
     </div>

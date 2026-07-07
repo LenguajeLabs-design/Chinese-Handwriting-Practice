@@ -10,7 +10,12 @@ interface DeckBrowserProps {
   onSelectDeck: (deckIndex: number) => void;
 }
 
-export function DeckBrowser({ decks, progress, completedDecks, onSelectDeck }: DeckBrowserProps) {
+export function DeckBrowser({
+  decks,
+  progress,
+  completedDecks,
+  onSelectDeck,
+}: DeckBrowserProps) {
   if (decks.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -24,8 +29,16 @@ export function DeckBrowser({ decks, progress, completedDecks, onSelectDeck }: D
       {decks.map((deck, idx) => {
         const isCompleted = completedDecks.includes(deck.id);
         const isLocked = idx > 0 && !completedDecks.includes(decks[idx - 1].id);
-        const uniqueChars = Array.from(new Set(deck.items.flatMap(i => i.characters.length ? i.characters : [i.word])));
-        const completedCount = uniqueChars.filter(c => progress[c]?.completed).length;
+        const uniqueChars = Array.from(
+          new Set(
+            deck.items.flatMap((i) =>
+              i.characters.length ? i.characters : [i.word],
+            ),
+          ),
+        );
+        const completedCount = uniqueChars.filter(
+          (c) => progress[c]?.completed,
+        ).length;
 
         return (
           <button
@@ -33,25 +46,36 @@ export function DeckBrowser({ decks, progress, completedDecks, onSelectDeck }: D
             onClick={() => !isLocked && onSelectDeck(idx)}
             disabled={isLocked}
             className={`
-              w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all
-              ${isLocked ? "opacity-50 cursor-not-allowed border-border bg-muted/30" : "border-border bg-white hover:border-primary/30"}
+              w-full flex items-center justify-between p-4 rounded-[22px] border text-left transition-all
+              ${isLocked ? "opacity-55 cursor-not-allowed border-border bg-muted/40" : "border-white/80 bg-white/84 hover:border-primary/25 hover:bg-white"}
             `}
           >
             <div className="flex items-center gap-3">
-              <div className={`
-                w-10 h-10 rounded-lg flex items-center justify-center shrink-0
+              <div
+                className={`
+                w-11 h-11 rounded-2xl flex items-center justify-center shrink-0
                 ${isCompleted ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}
-              `}>
-                {isLocked ? <Lock className="w-4 h-4" /> : isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <span className="font-medium">{idx + 1}</span>}
+              `}
+              >
+                {isLocked ? (
+                  <Lock className="w-4 h-4" />
+                ) : isCompleted ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <span className="font-medium">{idx + 1}</span>
+                )}
               </div>
               <div>
                 <div className="font-medium">{deck.name}</div>
-                <div className="text-xs text-muted-foreground">
-                  {completedCount} / {uniqueChars.length} characters &middot; {deck.items.length} words
+                <div className="text-xs text-muted-foreground mt-1">
+                  {completedCount} / {uniqueChars.length} characters &middot;{" "}
+                  {deck.items.length} words
                 </div>
               </div>
             </div>
-            {!isLocked && <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />}
+            {!isLocked && (
+              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+            )}
           </button>
         );
       })}

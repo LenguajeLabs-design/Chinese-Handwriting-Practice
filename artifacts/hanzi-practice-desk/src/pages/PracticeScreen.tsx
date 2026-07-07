@@ -10,20 +10,43 @@ import { ChevronLeft, ChevronRight, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function PracticeScreen() {
   const [, setLocation] = useLocation();
   const { activeDeck } = useDecks();
   const { progress, recordQuizResult } = useProgress();
-  const { hskState, markDeckCompleted, nextDeckIndex, setCurrentDeckForLevel, startDeck, checkDeckCompletion } = useHsk();
+  const {
+    hskState,
+    markDeckCompleted,
+    nextDeckIndex,
+    setCurrentDeckForLevel,
+    startDeck,
+    checkDeckCompletion,
+  } = useHsk();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isGridKey, setIsGridKey] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [gridSize, setGridSize] = useState(320);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setCurrentIndex(0);
     setShowCompletion(false);
   }, [activeDeck?.id]);
+
+  useEffect(() => {
+    const updateGridSize = () => {
+      const nextSize =
+        window.innerWidth < 768
+          ? Math.min(window.innerWidth - 40, 380)
+          : Math.min(window.innerWidth - 440, 520);
+      setGridSize(Math.max(260, nextSize));
+    };
+    updateGridSize();
+    window.addEventListener("resize", updateGridSize);
+    return () => window.removeEventListener("resize", updateGridSize);
+  }, []);
 
   const isHskDeck = activeDeck?.hskLevel !== undefined;
 
@@ -72,29 +95,48 @@ export function PracticeScreen() {
       <div className="h-full flex items-center justify-center p-6 text-center">
         <div className="max-w-md space-y-4">
           <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-            <span className="font-serif text-2xl text-muted-foreground">空</span>
+            <span className="font-serif text-2xl text-muted-foreground">
+              空
+            </span>
           </div>
           <h2 className="text-xl font-medium">This deck is empty</h2>
-          <p className="text-muted-foreground">Go to Custom Lists to create a new practice deck.</p>
+          <p className="text-muted-foreground">
+            Go to Custom Lists to create a new practice deck.
+          </p>
         </div>
       </div>
     );
   }
 
   const currentItem = activeDeck.characters[currentIndex];
-  const charProgress = progress[currentItem.char] || { completed: false, attempts: 0, quizScore: 0, quizTotal: 0 };
+  const charProgress = progress[currentItem.char] || {
+    completed: false,
+    attempts: 0,
+    quizScore: 0,
+    quizTotal: 0,
+  };
+  const missingGloss = !currentItem.meaning?.trim();
+  const pinyinLabel = currentItem.pinyin?.trim()
+    ? currentItem.pinyin
+    : "Trace and memorize";
+  const meaningLabel = missingGloss
+    ? "Add a meaning in your custom list to make recall easier."
+    : currentItem.meaning;
+  const completionRatio = `${currentIndex + 1} / ${activeDeck.characters.length}`;
+  const completionPercent =
+    ((currentIndex + 1) / activeDeck.characters.length) * 100;
 
   const handleNext = () => {
     if (currentIndex < activeDeck.characters.length - 1) {
-      setCurrentIndex(i => i + 1);
-      setIsGridKey(k => k + 1);
+      setCurrentIndex((i) => i + 1);
+      setIsGridKey((k) => k + 1);
     }
   };
 
   const handlePrev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(i => i - 1);
-      setIsGridKey(k => k + 1);
+      setCurrentIndex((i) => i - 1);
+      setIsGridKey((k) => k + 1);
     }
   };
 
@@ -112,40 +154,60 @@ export function PracticeScreen() {
       });
     } else {
       toast("Practice makes perfect.", {
-        description: `${summary.totalMistakes} mistakes made. You'll see this one again soon.`
+        description: `${summary.totalMistakes} mistakes made. You'll see this one again soon.`,
       });
     }
   };
 
   return (
     <div className="h-full flex flex-col md:flex-row relative">
-      
       {/* Mobile header + deck progress indicator */}
-      <div className="md:hidden border-b border-border bg-white">
-        <div className="flex items-center justify-between px-4 pt-4 pb-2">
-          <div>
-            <h1 className="text-base font-medium leading-tight">{activeDeck.name}</h1>
-            <p className="text-xs text-muted-foreground">{currentIndex + 1} of {activeDeck.characters.length}</p>
-          </div>
-          {isDue(progress[currentItem.char]) && charProgress.completed && (
-            <div className="flex items-center gap-1 text-[11px] font-medium text-rose-600 bg-rose-50 border border-rose-200 rounded-full px-2.5 py-1">
-              <Clock className="w-3 h-3" />
-              Due
+      <div className="md:hidden px-4 pt-4">
+        <div className="app-surface-strong px-4 py-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="eyebrow mb-1">Practice</p>
+              <h1 className="text-lg font-medium leading-tight">
+                {activeDeck.name}
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {completionRatio} characters in this session
+              </p>
             </div>
-          )}
+            {isDue(progress[currentItem.char]) && charProgress.completed && (
+              <div className="flex items-center gap-1 text-[11px] font-medium text-rose-600 bg-rose-50 border border-rose-200 rounded-full px-2.5 py-1">
+                <Clock className="w-3 h-3" />
+                Due
+              </div>
+            )}
+          </div>
+          <div className="mt-3 h-1.5 rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-[width]"
+              style={{ width: `${completionPercent}%` }}
+            />
+          </div>
         </div>
-        <div className="flex overflow-x-auto px-4 py-3 gap-2 hide-scrollbar">
+        <div className="flex overflow-x-auto px-1 py-3 gap-2 hide-scrollbar">
           {activeDeck.characters.map((item: Character, idx: number) => {
             const isDone = progress[item.char]?.completed;
             const due = isDue(progress[item.char]);
             return (
               <button
                 key={idx}
-                onClick={() => { setCurrentIndex(idx); setIsGridKey(k => k + 1); }}
+                onClick={() => {
+                  setCurrentIndex(idx);
+                  setIsGridKey((k) => k + 1);
+                }}
                 className={`
-                  relative flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center font-serif text-base transition-colors
-                  ${idx === currentIndex ? "bg-primary text-primary-foreground shadow-sm" : 
-                    isDone ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}
+                  relative flex-shrink-0 min-w-10 h-10 rounded-full px-2 flex items-center justify-center font-serif text-base transition-colors
+                  ${
+                    idx === currentIndex
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : isDone
+                        ? "bg-primary/10 text-primary"
+                        : "bg-white/70 text-muted-foreground border border-white/80"
+                  }
                 `}
               >
                 {item.char}
@@ -159,10 +221,14 @@ export function PracticeScreen() {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-12 relative">
-        <div className="absolute top-6 left-6 right-6 hidden md:flex justify-between items-center">
+        <div className="absolute top-6 left-6 right-6 hidden md:flex justify-between items-start gap-6">
           <div>
-            <h1 className="text-xl font-medium">{activeDeck.name}</h1>
-            <p className="text-sm text-muted-foreground">{currentIndex + 1} of {activeDeck.characters.length}</p>
+            <p className="eyebrow mb-2">Focused Practice</p>
+            <h1 className="text-2xl font-medium">{activeDeck.name}</h1>
+            <p className="mt-2 text-sm text-muted-foreground max-w-md">
+              One character at a time, with clear review cues and just enough
+              context to keep handwriting front and center.
+            </p>
           </div>
           {isDue(progress[currentItem.char]) && charProgress.completed && (
             <div className="flex items-center gap-1.5 text-xs font-medium text-rose-600 bg-rose-50 border border-rose-200 rounded-full px-3 py-1.5">
@@ -172,7 +238,7 @@ export function PracticeScreen() {
           )}
         </div>
 
-        <div className="w-full max-w-xl mx-auto flex flex-col items-center">
+        <div className="w-full max-w-3xl mx-auto flex flex-col items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentItem.char + isGridKey}
@@ -182,23 +248,49 @@ export function PracticeScreen() {
               transition={{ duration: 0.2 }}
               className="w-full flex flex-col items-center"
             >
-              <div className="text-center mb-4 md:mb-8 h-16 md:h-20 flex flex-col justify-end">
-                {currentItem.word && currentItem.charTotal && currentItem.charTotal > 1 && (
-                  <div className="text-xs font-medium text-muted-foreground mb-1.5">
-                    Word: {currentItem.word} &middot; Character {(currentItem.charIndex ?? 0) + 1} of {currentItem.charTotal}
+              <div className="w-full max-w-2xl mb-4 md:mb-8">
+                <div className="app-surface text-center px-5 py-5 md:px-8 md:py-6">
+                  <div className="flex items-center justify-between gap-3 text-left mb-4">
+                    <div>
+                      <p className="eyebrow mb-2">
+                        {isMobile ? "Current Character" : "Current Focus"}
+                      </p>
+                      <div className="text-sm text-muted-foreground">
+                        {completionRatio}
+                      </div>
+                    </div>
+                    <div className="h-1.5 w-24 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-primary transition-[width]"
+                        style={{ width: `${completionPercent}%` }}
+                      />
+                    </div>
                   </div>
-                )}
-                <div className="text-xl md:text-2xl text-primary font-medium tracking-wide mb-1">
-                  {currentItem.pinyin}
-                </div>
-                <div className="text-muted-foreground uppercase tracking-widest text-xs font-semibold">
-                  {currentItem.meaning}
+                  <div className="h-16 md:h-20 flex flex-col justify-end">
+                    {currentItem.word &&
+                      currentItem.charTotal &&
+                      currentItem.charTotal > 1 && (
+                        <div className="text-xs font-medium text-muted-foreground mb-1.5">
+                          Word: {currentItem.word} &middot; Character{" "}
+                          {(currentItem.charIndex ?? 0) + 1} of{" "}
+                          {currentItem.charTotal}
+                        </div>
+                      )}
+                    <div className="text-xl md:text-2xl text-primary font-medium tracking-wide mb-1">
+                      {pinyinLabel}
+                    </div>
+                    <div
+                      className={`text-sm ${missingGloss ? "text-muted-foreground" : "text-foreground/72"} ${missingGloss ? "" : "tracking-wide"}`}
+                    >
+                      {meaningLabel}
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div
-                className="flex items-center justify-center gap-4 w-full mb-2"
-                style={{ maxWidth: Math.min(window.innerWidth - 48, 400) }}
+                className="flex items-center justify-center gap-4 w-full mb-3"
+                style={{ maxWidth: gridSize }}
               >
                 <Button
                   variant="ghost"
@@ -223,66 +315,80 @@ export function PracticeScreen() {
                 </Button>
               </div>
 
-              <PracticeGrid 
-                character={currentItem.char} 
+              <PracticeGrid
+                character={currentItem.char}
                 onQuizComplete={handleQuizComplete}
-                size={Math.min(window.innerWidth - 48, 400)}
+                size={gridSize}
               />
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex items-center justify-center w-full max-w-sm mt-6 md:mt-12 px-4">
+          <div className="flex items-center justify-center w-full max-w-sm mt-4 md:mt-8 px-4">
             <div className="text-sm font-medium text-muted-foreground tabular-nums">
-              {currentIndex + 1} / {activeDeck.characters.length}
+              {completionRatio}
             </div>
           </div>
         </div>
       </div>
 
       {/* Desktop Sidebar List */}
-      <div className="hidden md:block w-72 border-l border-border bg-white h-full overflow-y-auto">
-        <div className="p-6 sticky top-0 bg-white/80 backdrop-blur-md z-10 border-b border-border/50">
-          <h3 className="font-medium">Character List</h3>
-        </div>
-        <div className="p-4 space-y-2">
-          {activeDeck.characters.map((item: Character, idx: number) => {
-            const isDone = progress[item.char]?.completed;
-            const isActive = idx === currentIndex;
-            const due = isDue(progress[item.char]);
-            return (
-              <button
-                key={idx}
-                onClick={() => { setCurrentIndex(idx); setIsGridKey(k => k + 1); }}
-                className={`
-                  w-full flex items-center p-3 rounded-xl transition-all text-left group
-                  ${isActive ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted bg-transparent"}
+      <div className="hidden md:block w-80 px-4 py-4 h-full">
+        <div className="app-surface-strong h-full overflow-y-auto">
+          <div className="p-6 sticky top-0 bg-white/78 backdrop-blur-md z-10 border-b border-border/50 rounded-t-[24px]">
+            <p className="eyebrow mb-2">Session Queue</p>
+            <h3 className="font-medium">Character List</h3>
+          </div>
+          <div className="p-4 space-y-2">
+            {activeDeck.characters.map((item: Character, idx: number) => {
+              const isDone = progress[item.char]?.completed;
+              const isActive = idx === currentIndex;
+              const due = isDue(progress[item.char]);
+              return (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setCurrentIndex(idx);
+                    setIsGridKey((k) => k + 1);
+                  }}
+                  className={`
+                  w-full flex items-center p-3 rounded-2xl transition-all text-left group
+                  ${isActive ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted/70 bg-transparent"}
                 `}
-              >
-                <div className={`
+                >
+                  <div
+                    className={`
                   relative w-10 h-10 rounded-lg flex items-center justify-center font-serif text-xl mr-4
-                  ${isActive ? "bg-white/20" : isDone ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground group-hover:bg-background"}
-                `}>
-                  {item.char}
-                  {due && isDone && !isActive && (
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-400 ring-2 ring-white" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className={`font-medium truncate ${isActive ? "text-primary-foreground" : "text-foreground"}`}>
-                    {item.pinyin}
+                  ${isActive ? "bg-white/20" : isDone ? "bg-primary/10 text-primary" : "bg-white text-muted-foreground group-hover:bg-background"}
+                `}
+                  >
+                    {item.char}
+                    {due && isDone && !isActive && (
+                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-400 ring-2 ring-white" />
+                    )}
                   </div>
-                  <div className={`text-xs truncate ${isActive ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-                    {item.meaning}
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className={`font-medium truncate ${isActive ? "text-primary-foreground" : "text-foreground"}`}
+                    >
+                      {item.pinyin}
+                    </div>
+                    <div
+                      className={`text-xs truncate ${isActive ? "text-primary-foreground/80" : "text-muted-foreground"}`}
+                    >
+                      {item.meaning}
+                    </div>
                   </div>
-                </div>
-                {isDone && !isActive && (
-                  due
-                    ? <Clock className="w-4 h-4 text-rose-400 shrink-0" />
-                    : <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                )}
-              </button>
-            );
-          })}
+                  {isDone &&
+                    !isActive &&
+                    (due ? (
+                      <Clock className="w-4 h-4 text-rose-400 shrink-0" />
+                    ) : (
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    ))}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
