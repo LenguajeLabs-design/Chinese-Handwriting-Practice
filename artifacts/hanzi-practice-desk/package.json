@@ -76,7 +76,6 @@
     "zod": "catalog:"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.110.2",
     "hanzi-writer": "^3.7.3",
     "pinyin-pro": "^3.28.1"
   }

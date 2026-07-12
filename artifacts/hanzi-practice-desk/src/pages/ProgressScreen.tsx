@@ -9,7 +9,7 @@ import {
   Target,
   Clock,
 } from "lucide-react";
-import { CloudSyncPanel } from "@/components/cloud-sync-panel";
+import { BackupPanel } from "@/components/backup-panel";
 
 export function ProgressScreen() {
   const { progress } = useProgress();
@@ -73,7 +73,7 @@ export function ProgressScreen() {
         </div>
 
         <div className="mb-6 md:mb-8">
-          <CloudSyncPanel />
+          <BackupPanel />
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-10">
