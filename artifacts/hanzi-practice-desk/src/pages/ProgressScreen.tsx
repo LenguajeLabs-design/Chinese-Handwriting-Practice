@@ -9,6 +9,7 @@ import {
   Target,
   Clock,
 } from "lucide-react";
+import { CloudSyncPanel } from "@/components/cloud-sync-panel";
 
 export function ProgressScreen() {
   const { progress } = useProgress();
@@ -69,6 +70,10 @@ export function ProgressScreen() {
             Track consistency, spot reviews that are ready now, and quickly see
             which characters need another pass.
           </p>
+        </div>
+
+        <div className="mb-6 md:mb-8">
+          <CloudSyncPanel />
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-10">
