@@ -18,20 +18,16 @@ For local development, place them in a `.env.local` file inside:
 
 ## Auth setup
 
-Enable Supabase Auth with Google sign-in.
+Enable Supabase Auth with email sign-in.
 
 Recommended provider:
 
-- Google OAuth
+- Email magic links
 
-Recommended redirect URLs in Supabase:
+Recommended redirect URLs:
 
 - `http://localhost:5173`
 - `https://lenguajelabs-design.github.io/Chinese-Handwriting-Practice/`
-
-Also add the Supabase callback URL to your Google OAuth client:
-
-- `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback`
 
 If you use additional preview environments, add those too.
 
@@ -71,7 +67,7 @@ with check (auth.uid() = user_id);
 ## How the app behaves
 
 - Progress still lives locally first, so the app works offline.
-- Once a user signs in with Google and taps `Sync This Device`, auto-sync is enabled on
+- Once a user signs in and taps `Sync This Device`, auto-sync is enabled on
   that device.
 - A second device can sign in and choose `Restore Cloud Progress`.
 - The backup JSON buttons remain available as a manual fallback.

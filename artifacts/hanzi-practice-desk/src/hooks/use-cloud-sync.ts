@@ -46,6 +46,7 @@ export function useCloudSync() {
   const configured = isSupabaseConfigured();
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [email, setEmail] = useState("");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
@@ -157,7 +158,7 @@ export function useCloudSync() {
     }
   }
 
-  async function signInWithGoogle() {
+  async function sendMagicLink() {
     if (!client) return;
 
     setIsBusy(true);
@@ -166,26 +167,30 @@ export function useCloudSync() {
 
     try {
       // Always return to the app entry URL. Deep links and hash routes can
-      // break mobile auth callbacks on GitHub Pages.
+      // break mobile email callbacks on GitHub Pages.
       const redirectUrl = new URL(
         import.meta.env.BASE_URL,
         window.location.origin,
       ).toString();
 
-      const { error } = await client.auth.signInWithOAuth({
-        provider: "google",
+      const { error } = await client.auth.signInWithOtp({
+        email,
         options: {
-          redirectTo: redirectUrl,
+          shouldCreateUser: true,
+          emailRedirectTo: redirectUrl,
         },
       });
 
       if (error) throw error;
+
+      setStatusMessage("Check your email on this device to finish sign-in.");
     } catch (error) {
       const message = getCloudSyncErrorMessage(
         error,
-        "Could not start Google sign-in.",
+        "Could not send sign-in link.",
       );
       setErrorMessage(message);
+    } finally {
       setIsBusy(false);
     }
   }
@@ -270,6 +275,8 @@ export function useCloudSync() {
     configured,
     session,
     user,
+    email,
+    setEmail,
     isBusy,
     statusMessage,
     errorMessage,
@@ -278,7 +285,7 @@ export function useCloudSync() {
     cloudIsNewer,
     uploadSnapshot,
     restoreSnapshot,
-    signInWithGoogle,
+    sendMagicLink,
     signOut,
   };
 }
