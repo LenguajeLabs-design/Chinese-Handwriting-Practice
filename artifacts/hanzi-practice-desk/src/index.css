@@ -49,6 +49,7 @@
 }
 
 :root {
+  color-scheme: light;
   --background: 197 36% 97%;
   --foreground: 215 32% 14%;
 
@@ -100,6 +101,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: 215 30% 9%;
   --foreground: 200 25% 96%;
 
@@ -138,6 +140,11 @@
   --sidebar-accent: 196 55% 48%;
   --sidebar-accent-foreground: 215 32% 10%;
   --sidebar-ring: 196 55% 48%;
+
+  --surface: rgba(19, 27, 37, 0.84);
+  --surface-strong: rgba(22, 31, 43, 0.94);
+  --shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.34);
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.26);
 }
 
 @layer base {
@@ -164,6 +171,24 @@
       );
     background-attachment: fixed;
     min-height: 100vh;
+  }
+  .dark body {
+    background-image:
+      radial-gradient(
+        circle at top left,
+        rgba(63, 140, 165, 0.18),
+        transparent 30%
+      ),
+      radial-gradient(
+        circle at top right,
+        rgba(12, 18, 28, 0.42),
+        transparent 24%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(11, 18, 27, 0.98),
+        rgba(15, 23, 34, 0.98)
+      );
   }
   h1,
   h2,
@@ -281,6 +306,21 @@
       rgba(255, 255, 255, 0.05) 50.5%,
       transparent 50.5%
     );
+}
+
+.dark .bg-white\/70,
+.dark .bg-white\/72,
+.dark .bg-white\/78,
+.dark .bg-white\/80,
+.dark .bg-white\/88,
+.dark .bg-white {
+  background-color: rgba(24, 33, 45, 0.88) !important;
+}
+
+.dark .border-white\/70,
+.dark .border-white\/80,
+.dark .border-white\/85 {
+  border-color: hsl(var(--border) / 0.9) !important;
 }
 
 /* Prevent zoom/scroll on canvas area for Apple Pencil */

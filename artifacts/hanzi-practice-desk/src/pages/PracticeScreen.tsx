@@ -288,38 +288,35 @@ export function PracticeScreen() {
                 </div>
               </div>
 
-              <div
-                className="flex items-center justify-center gap-5 w-full mb-3"
-                style={{ maxWidth: gridSize }}
-              >
+              <div className="relative mb-2 md:mb-4" style={{ width: gridSize }}>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full w-16 h-16 md:w-18 md:h-18 disabled:opacity-30 shrink-0 border border-white/70 bg-white/72 hover:bg-white"
+                  className="absolute left-[-3.75rem] md:left-[-5.5rem] top-1/2 z-20 -translate-y-1/2 rounded-full h-[4.5rem] w-[4.5rem] md:h-[5rem] md:w-[5rem] disabled:opacity-35 border border-border/80 bg-background/92 shadow-lg backdrop-blur hover:bg-background"
                   onClick={handlePrev}
                   disabled={currentIndex === 0}
                 >
-                  <ChevronLeft className="w-10 h-10 md:w-11 md:h-11" />
+                  <ChevronLeft className="w-12 h-12 md:w-14 md:h-14" />
                 </Button>
 
-                <div className="flex-1" />
+                <div className="mx-auto flex justify-center" style={{ width: gridSize }}>
+                  <PracticeGrid
+                    character={currentItem.char}
+                    onQuizComplete={handleQuizComplete}
+                    size={gridSize}
+                  />
+                </div>
 
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full w-16 h-16 md:w-18 md:h-18 disabled:opacity-30 shrink-0 border border-white/70 bg-white/72 hover:bg-white"
+                  className="absolute right-[-3.75rem] md:right-[-5.5rem] top-1/2 z-20 -translate-y-1/2 rounded-full h-[4.5rem] w-[4.5rem] md:h-[5rem] md:w-[5rem] disabled:opacity-35 border border-border/80 bg-background/92 shadow-lg backdrop-blur hover:bg-background"
                   onClick={handleNext}
                   disabled={currentIndex === activeDeck.characters.length - 1}
                 >
-                  <ChevronRight className="w-10 h-10 md:w-11 md:h-11" />
+                  <ChevronRight className="w-12 h-12 md:w-14 md:h-14" />
                 </Button>
               </div>
-
-              <PracticeGrid
-                character={currentItem.char}
-                onQuizComplete={handleQuizComplete}
-                size={gridSize}
-              />
             </motion.div>
           </AnimatePresence>
 
