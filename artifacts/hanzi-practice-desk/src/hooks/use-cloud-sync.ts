@@ -46,7 +46,6 @@ export function useCloudSync() {
   const configured = isSupabaseConfigured();
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [email, setEmail] = useState("");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
@@ -158,7 +157,7 @@ export function useCloudSync() {
     }
   }
 
-  async function sendMagicLink() {
+  async function signInWithGoogle() {
     if (!client) return;
 
     setIsBusy(true);
@@ -167,30 +166,26 @@ export function useCloudSync() {
 
     try {
       // Always return to the app entry URL. Deep links and hash routes can
-      // break mobile email callbacks on GitHub Pages.
+      // break mobile auth callbacks on GitHub Pages.
       const redirectUrl = new URL(
         import.meta.env.BASE_URL,
         window.location.origin,
       ).toString();
 
-      const { error } = await client.auth.signInWithOtp({
-        email,
+      const { error } = await client.auth.signInWithOAuth({
+        provider: "google",
         options: {
-          shouldCreateUser: true,
-          emailRedirectTo: redirectUrl,
+          redirectTo: redirectUrl,
         },
       });
 
       if (error) throw error;
-
-      setStatusMessage("Check your email on this device to finish sign-in.");
     } catch (error) {
       const message = getCloudSyncErrorMessage(
         error,
-        "Could not send sign-in link.",
+        "Could not start Google sign-in.",
       );
       setErrorMessage(message);
-    } finally {
       setIsBusy(false);
     }
   }
@@ -275,8 +270,6 @@ export function useCloudSync() {
     configured,
     session,
     user,
-    email,
-    setEmail,
     isBusy,
     statusMessage,
     errorMessage,
@@ -285,7 +278,7 @@ export function useCloudSync() {
     cloudIsNewer,
     uploadSnapshot,
     restoreSnapshot,
-    sendMagicLink,
+    signInWithGoogle,
     signOut,
   };
 }
