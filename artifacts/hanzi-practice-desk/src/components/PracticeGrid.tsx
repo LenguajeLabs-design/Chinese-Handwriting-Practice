@@ -91,12 +91,15 @@ export function PracticeGrid({ character, onQuizComplete, size = 300, autoStart 
     const handlePointerDown = (e: PointerEvent) => {
       if (mode !== "quiz") return;
       isPointerDownRef.current = true;
-      sound.start(e.clientX, e.clientY);
+      sound.start(e.clientX, e.clientY, e.pressure);
+      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+        navigator.vibrate(8);
+      }
     };
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!isPointerDownRef.current) return;
-      sound.move(e.clientX, e.clientY);
+      sound.move(e.clientX, e.clientY, e.pressure);
     };
 
     const handlePointerUp = () => {
@@ -135,6 +138,9 @@ export function PracticeGrid({ character, onQuizComplete, size = 300, autoStart 
       onComplete: (summaryData) => {
         if (onQuizComplete) {
           onQuizComplete(summaryData);
+        }
+        if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+          navigator.vibrate(summaryData.totalMistakes === 0 ? [12, 18, 16] : 10);
         }
         setMode("view");
       }

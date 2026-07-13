@@ -40,7 +40,7 @@ export function PracticeScreen() {
       const nextSize =
         window.innerWidth < 768
           ? Math.min(window.innerWidth - 40, 380)
-          : Math.min(window.innerWidth - 440, 520);
+          : Math.min(window.innerWidth - 400, 560);
       setGridSize(Math.max(260, nextSize));
     };
     updateGridSize();
@@ -289,17 +289,17 @@ export function PracticeScreen() {
               </div>
 
               <div
-                className="flex items-center justify-center gap-4 w-full mb-3"
+                className="flex items-center justify-center gap-5 w-full mb-3"
                 style={{ maxWidth: gridSize }}
               >
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full w-14 h-14 disabled:opacity-30 shrink-0"
+                  className="rounded-full w-16 h-16 md:w-18 md:h-18 disabled:opacity-30 shrink-0 border border-white/70 bg-white/72 hover:bg-white"
                   onClick={handlePrev}
                   disabled={currentIndex === 0}
                 >
-                  <ChevronLeft className="w-9 h-9" />
+                  <ChevronLeft className="w-10 h-10 md:w-11 md:h-11" />
                 </Button>
 
                 <div className="flex-1" />
@@ -307,11 +307,11 @@ export function PracticeScreen() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full w-14 h-14 disabled:opacity-30 shrink-0"
+                  className="rounded-full w-16 h-16 md:w-18 md:h-18 disabled:opacity-30 shrink-0 border border-white/70 bg-white/72 hover:bg-white"
                   onClick={handleNext}
                   disabled={currentIndex === activeDeck.characters.length - 1}
                 >
-                  <ChevronRight className="w-9 h-9" />
+                  <ChevronRight className="w-10 h-10 md:w-11 md:h-11" />
                 </Button>
               </div>
 

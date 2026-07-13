@@ -30,6 +30,7 @@ export class WritingSoundEngine {
   private gain: GainNode | null = null;
   private lastX = 0;
   private lastY = 0;
+  private lastPressure = 0.5;
   private active = false;
 
   private ensureContext() {
@@ -42,7 +43,7 @@ export class WritingSoundEngine {
     return this.ctx;
   }
 
-  start(x: number, y: number) {
+  start(x: number, y: number, pressure = 0.5) {
     const ctx = this.ensureContext();
     if (!ctx) return;
 
@@ -66,7 +67,7 @@ export class WritingSoundEngine {
 
     const now = ctx.currentTime;
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.012, now + 0.03);
+    gain.gain.linearRampToValueAtTime(0.008 + pressure * 0.012, now + 0.03);
 
     source.start();
 
@@ -75,24 +76,27 @@ export class WritingSoundEngine {
     this.gain = gain;
     this.lastX = x;
     this.lastY = y;
+    this.lastPressure = pressure > 0 ? pressure : 0.5;
     this.active = true;
   }
 
-  move(x: number, y: number) {
+  move(x: number, y: number, pressure = 0.5) {
     if (!this.active || !this.ctx || !this.filter || !this.gain) return;
 
     const dx = x - this.lastX;
     const dy = y - this.lastY;
     const speed = Math.min(Math.sqrt(dx * dx + dy * dy), 40);
+    const nextPressure = pressure > 0 ? pressure : this.lastPressure;
     this.lastX = x;
     this.lastY = y;
+    this.lastPressure = nextPressure;
 
     const now = this.ctx.currentTime;
-    const targetFreq = 1800 + speed * 30 + Math.random() * 200;
+    const targetFreq = 1600 + speed * 28 + nextPressure * 480 + Math.random() * 140;
     this.filter.frequency.cancelScheduledValues(now);
     this.filter.frequency.linearRampToValueAtTime(targetFreq, now + 0.05);
 
-    const targetGain = speed > 0.5 ? 0.014 : 0.006;
+    const targetGain = speed > 0.5 ? 0.006 + nextPressure * 0.018 : 0.004;
     this.gain.gain.cancelScheduledValues(now);
     this.gain.gain.linearRampToValueAtTime(targetGain, now + 0.04);
   }
@@ -119,5 +123,6 @@ export class WritingSoundEngine {
     this.filter = null;
     this.gain = null;
     this.active = false;
+    this.lastPressure = 0.5;
   }
 }
