@@ -15,13 +15,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-transparent">
       {/* Desktop / tablet sidebar */}
-      <nav className="hidden md:flex md:w-20 lg:w-80 px-4 py-4 flex-col flex-shrink-0 z-10">
-        <div className="app-surface h-full flex flex-col items-center lg:items-start px-3 py-5 lg:px-5 lg:py-6">
-          <div className="mb-8 flex items-center justify-center lg:justify-start w-full">
+      <nav className="hidden md:flex md:w-72 lg:w-80 px-4 py-4 flex-col flex-shrink-0 z-10">
+        <div className="app-surface h-full flex flex-col items-start px-4 py-5 lg:px-5 lg:py-6">
+          <div className="mb-8 flex items-center justify-start w-full">
             <div className="w-10 h-10 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center font-serif text-xl font-bold shadow-sm">
               字
             </div>
-            <div className="ml-3 hidden lg:block">
+            <div className="ml-3">
               <div className="font-semibold text-lg">Practice Desk</div>
               <div className="text-sm text-muted-foreground">
                 Trace with calm, daily repetition.
@@ -29,7 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          <div className="hidden lg:block mb-6 px-1">
+          <div className="mb-6 px-1">
             <p className="eyebrow mb-2">Daily Flow</p>
             <p className="section-copy">
               Pick a deck, trace each character, and return when reviews are
@@ -52,15 +52,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     }
                   `}
                   >
-                    <item.icon className="w-5 h-5 lg:mr-3" />
-                    <span className="hidden lg:block">{item.label}</span>
+                    <item.icon className="w-5 h-5 mr-3" />
+                    <span>{item.label}</span>
                   </div>
                 </Link>
               );
             })}
           </div>
 
-          <div className="hidden lg:block w-full rounded-2xl border border-white/70 bg-white/70 p-4">
+          <div className="w-full rounded-2xl border border-white/70 bg-white/70 p-4">
             <p className="text-sm font-medium text-foreground">
               Touch-friendly practice
             </p>
