@@ -19,6 +19,19 @@ interface CloudSnapshotRow {
   user_id: string;
 }
 
+function getCloudSyncErrorMessage(
+  error: unknown,
+  fallback: string,
+): string {
+  const message = error instanceof Error ? error.message : fallback;
+
+  if (/email rate limit exceeded/i.test(message)) {
+    return "Too many sign-in emails were requested too quickly. Wait a minute, then try again.";
+  }
+
+  return message;
+}
+
 function readAutoSyncEnabled(): boolean {
   if (typeof localStorage === "undefined") return false;
   return localStorage.getItem(AUTO_SYNC_KEY) === "true";
@@ -108,8 +121,7 @@ export function useCloudSync() {
         setStatusMessage("This device is now syncing with Supabase.");
       }
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Cloud backup failed.";
+      const message = getCloudSyncErrorMessage(error, "Cloud backup failed.");
       setErrorMessage(message);
     } finally {
       if (!options?.silent) {
@@ -139,8 +151,7 @@ export function useCloudSync() {
       saveAutoSyncEnabled(true);
       setStatusMessage("Cloud progress restored to this device.");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Cloud restore failed.";
+      const message = getCloudSyncErrorMessage(error, "Cloud restore failed.");
       setErrorMessage(message);
     } finally {
       setIsBusy(false);
@@ -155,11 +166,12 @@ export function useCloudSync() {
     setStatusMessage(null);
 
     try {
-      const redirectUrl =
-        window.location.origin +
-        window.location.pathname +
-        window.location.search +
-        window.location.hash;
+      // Always return to the app entry URL. Deep links and hash routes can
+      // break mobile email callbacks on GitHub Pages.
+      const redirectUrl = new URL(
+        import.meta.env.BASE_URL,
+        window.location.origin,
+      ).toString();
 
       const { error } = await client.auth.signInWithOtp({
         email,
@@ -173,8 +185,10 @@ export function useCloudSync() {
 
       setStatusMessage("Check your email on this device to finish sign-in.");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Could not send sign-in link.";
+      const message = getCloudSyncErrorMessage(
+        error,
+        "Could not send sign-in link.",
+      );
       setErrorMessage(message);
     } finally {
       setIsBusy(false);
@@ -196,8 +210,7 @@ export function useCloudSync() {
       setRemoteSnapshot(null);
       setStatusMessage("Signed out of cloud sync on this device.");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Could not sign out.";
+      const message = getCloudSyncErrorMessage(error, "Could not sign out.");
       setErrorMessage(message);
     } finally {
       setIsBusy(false);
@@ -228,8 +241,10 @@ export function useCloudSync() {
     if (!client || !user) return;
 
     refreshRemoteSnapshot(user).catch((error) => {
-      const message =
-        error instanceof Error ? error.message : "Could not load cloud sync.";
+      const message = getCloudSyncErrorMessage(
+        error,
+        "Could not load cloud sync.",
+      );
       setErrorMessage(message);
     });
   }, [client, user]);
