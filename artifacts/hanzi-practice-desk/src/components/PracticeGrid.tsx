@@ -18,10 +18,42 @@ export function PracticeGrid({ character, onQuizComplete, size = 300, autoStart 
   const isPointerDownRef = useRef(false);
   const [isReady, setIsReady] = useState(false);
   const [mode, setMode] = useState<"view" | "quiz">("view");
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const syncTheme = () => {
+      setIsDarkMode(root.classList.contains("dark"));
+    };
+
+    syncTheme();
+
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   if (!soundRef.current) {
     soundRef.current = new WritingSoundEngine();
   }
+
+  const writerColors = isDarkMode
+    ? {
+        strokeColor: "#f2f7fb",
+        radicalColor: "#78c4df",
+        outlineColor: "#334155",
+        drawingColor: "#ffffff",
+      }
+    : {
+        strokeColor: "#152233",
+        radicalColor: "#1e6b83",
+        outlineColor: "#e2e8ec",
+        drawingColor: "#152233",
+      };
 
   useEffect(() => {
     if (!gridRef.current) return;
@@ -37,10 +69,10 @@ export function PracticeGrid({ character, onQuizComplete, size = 300, autoStart 
       padding: 16,
       strokeAnimationSpeed: 1.5,
       delayBetweenStrokes: 150,
-      strokeColor: '#152233', // deep ink navy
-      radicalColor: '#1e6b83', // deep teal
-      outlineColor: '#e2e8ec', // cool light gray outline
-      drawingColor: '#152233',
+      strokeColor: writerColors.strokeColor,
+      radicalColor: writerColors.radicalColor,
+      outlineColor: writerColors.outlineColor,
+      drawingColor: writerColors.drawingColor,
       drawingWidth: 16,
       showOutline: true,
       onLoadCharDataSuccess: () => {
@@ -64,7 +96,7 @@ export function PracticeGrid({ character, onQuizComplete, size = 300, autoStart 
     return () => {
       // no explicit destroy needed for hanzi-writer, just clearing HTML works
     };
-  }, [character, size, autoStart]);
+  }, [character, size, autoStart, writerColors.drawingColor, writerColors.outlineColor, writerColors.radicalColor, writerColors.strokeColor]);
 
   // Touch prevention for iPad
   useEffect(() => {
@@ -158,14 +190,14 @@ export function PracticeGrid({ character, onQuizComplete, size = 300, autoStart 
   return (
     <div className="flex flex-col items-center gap-8 w-full max-w-md mx-auto">
       <div 
-        className="relative bg-white rounded-2xl shadow-sm border border-border overflow-hidden touch-none-all group"
+        className="relative bg-white dark:bg-slate-950 rounded-2xl shadow-sm border border-border overflow-hidden touch-none-all group"
         style={{ width: size, height: size }}
       >
         <div className="absolute inset-0 hanzi-grid opacity-50 pointer-events-none" />
         <div ref={gridRef} className="absolute inset-0 cursor-crosshair touch-none-all" />
         
         {!isReady && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+          <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         )}

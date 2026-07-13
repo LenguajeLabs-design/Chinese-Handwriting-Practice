@@ -29,6 +29,7 @@ export interface HskState {
 export interface StoreMetadata {
   schemaVersion: number;
   lastUpdatedAt: string | null;
+  lastCloudSyncAt?: string | null;
 }
 
 export interface StorageSnapshot {
@@ -135,6 +136,7 @@ function getDefaultMetadata(): StoreMetadata {
   return {
     schemaVersion: STORE_SCHEMA_VERSION,
     lastUpdatedAt: null,
+    lastCloudSyncAt: null,
   };
 }
 
@@ -202,10 +204,16 @@ export function importStoreSnapshot(snapshot: StorageSnapshot) {
       schemaVersion: snapshot.version || STORE_SCHEMA_VERSION,
       lastUpdatedAt:
         snapshot.metadata?.lastUpdatedAt ?? snapshot.exportedAt ?? nowIso(),
+      lastCloudSyncAt:
+        snapshot.metadata?.lastCloudSyncAt ?? snapshot.exportedAt ?? null,
     },
     { emit: false },
   );
   emitStoreChanged();
+}
+
+export function markCloudSyncCompleted(at: string = nowIso()) {
+  saveMetadata({ lastCloudSyncAt: at }, { emit: false });
 }
 
 export const store = {
