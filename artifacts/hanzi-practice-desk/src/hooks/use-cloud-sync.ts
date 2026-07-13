@@ -165,12 +165,14 @@ export function useCloudSync() {
     setStatusMessage(null);
 
     try {
-      // Always return to the app entry URL. Deep links and hash routes can
-      // break mobile auth callbacks on GitHub Pages.
-      const redirectUrl = new URL(
+      const baseUrl = new URL(
         import.meta.env.BASE_URL,
         window.location.origin,
       ).toString();
+      const redirectUrl =
+        import.meta.env.VITE_ROUTER_MODE === "hash"
+          ? `${baseUrl}#/progress`
+          : `${baseUrl}progress`;
 
       const { error } = await client.auth.signInWithOAuth({
         provider: "google",
