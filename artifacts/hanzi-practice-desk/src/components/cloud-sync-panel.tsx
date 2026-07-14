@@ -83,33 +83,49 @@ export function CloudSyncPanel() {
       ) : null}
 
       {!user ? (
-        <div className="rounded-[22px] border border-white/80 bg-white/72 p-4 space-y-3">
-          <div>
-            <div className="font-medium">Continue with Google</div>
-            <div className="text-sm text-muted-foreground mt-1">
-              Use the same Google account on each device for smoother sign-in
-              and more reliable syncing.
+        <div className="rounded-[22px] border border-white/80 bg-white/72 p-4 md:p-5 space-y-4">
+          <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
+            <div>
+              <div className="font-medium">Continue with Google</div>
+              <div className="text-sm text-muted-foreground mt-1 leading-6">
+                Use the same Google account on each device for smoother sign-in
+                and more reliable syncing.
+              </div>
+            </div>
+            <div className="rounded-2xl bg-muted/65 px-3 py-2 text-xs text-muted-foreground">
+              Step 1 of 2
             </div>
           </div>
-          <div className="flex flex-col gap-3 sm:max-w-md">
+          <div className="grid gap-3">
             <Button
               type="button"
               onClick={signInWithGoogle}
               disabled={isBusy}
-              className="h-12 rounded-full px-6"
+              className="h-12 rounded-full px-6 sm:max-w-md"
             >
               <GoogleMark />
               Continue with Google
             </Button>
-            <p className="text-xs text-muted-foreground">
-              After you sign in once, you can sync this device and restore the
-              same progress on your iPad, phone, or computer.
-            </p>
+            <div className="rounded-2xl border border-border/70 bg-background/65 p-3">
+              <p className="text-sm font-medium">What happens next</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                After sign-in, tap{" "}
+                <span className="font-medium text-foreground">
+                  Sync This Device
+                </span>{" "}
+                on the device that already has your newest progress. Then open
+                your other device and tap{" "}
+                <span className="font-medium text-foreground">
+                  Restore Cloud Progress
+                </span>
+                .
+              </p>
+            </div>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="rounded-[22px] border border-white/80 bg-white/72 p-4 grid sm:grid-cols-3 gap-4">
+          <div className="rounded-[22px] border border-white/80 bg-white/72 p-4 grid gap-4 sm:grid-cols-3">
             <div>
               <div className="text-sm text-muted-foreground">Signed in as</div>
               <div className="font-medium mt-1 break-all">{user.email}</div>
@@ -132,6 +148,21 @@ export function CloudSyncPanel() {
             </div>
           </div>
 
+          <div className="rounded-[22px] border border-border/70 bg-background/65 p-4">
+            <p className="text-sm font-medium">Choose a source of truth</p>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+              Use{" "}
+              <span className="font-medium text-foreground">
+                Sync This Device
+              </span>{" "}
+              on the device with the newest progress. On any older device, use{" "}
+              <span className="font-medium text-foreground">
+                Restore Cloud Progress
+              </span>{" "}
+              so everything matches before you keep practicing.
+            </p>
+          </div>
+
           {cloudIsNewer ? (
             <Alert className="border-amber-200 bg-amber-50 text-amber-950">
               <AlertTitle>Cloud progress looks newer</AlertTitle>
@@ -142,12 +173,12 @@ export function CloudSyncPanel() {
             </Alert>
           ) : null}
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col gap-3 lg:flex-row">
             <Button
               type="button"
               onClick={() => uploadSnapshot()}
               disabled={isBusy}
-              className="h-12 rounded-full px-6"
+              className="h-12 rounded-full px-6 lg:flex-1"
             >
               <Upload className="w-4 h-4" />
               Sync This Device
@@ -157,7 +188,7 @@ export function CloudSyncPanel() {
               variant="outline"
               onClick={restoreSnapshot}
               disabled={isBusy || !remoteSnapshot}
-              className="h-12 rounded-full px-6"
+              className="h-12 rounded-full px-6 lg:flex-1"
             >
               <Download className="w-4 h-4" />
               Restore Cloud Progress
@@ -167,7 +198,7 @@ export function CloudSyncPanel() {
               variant="ghost"
               onClick={signOut}
               disabled={isBusy}
-              className="h-12 rounded-full px-6"
+              className="h-12 rounded-full px-6 lg:self-start"
             >
               <LogOut className="w-4 h-4" />
               Sign Out

@@ -54,8 +54,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="mb-6 px-1">
             <p className="eyebrow mb-2">Daily Flow</p>
-            <p className="section-copy">
-              Pick a deck, trace, and come back when review is due.
+            <p className="text-sm leading-7 text-muted-foreground">
+              Pick a deck, trace a few characters, and return when review is ready.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <div>
                 <p className="text-sm font-medium text-foreground">Night mode</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Softer contrast for evening practice.
+                  Softer contrast for evening sessions.
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -107,8 +107,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
               Touch-friendly practice
             </p>
             <p className="mt-1 text-sm text-muted-foreground leading-6">
-              The writing grid stays center stage, with the rest of the
-              interface kept intentionally quiet.
+              The writing grid stays center stage, with everything else kept calm
+              and easy to reach.
             </p>
           </div>
         </div>
@@ -123,7 +123,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <button
           type="button"
           onClick={() => handleThemeToggle(!isDarkMode)}
-          className="app-surface-strong h-11 w-11 rounded-full flex items-center justify-center"
+          className="app-surface-strong h-12 w-12 rounded-full flex items-center justify-center shadow-[0_14px_28px_rgba(16,42,56,0.18)]"
           aria-label="Toggle night mode"
         >
           {isDarkMode ? (
@@ -134,19 +134,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </button>
       </div>
 
-      <nav className="md:hidden fixed bottom-3 left-3 right-3 rounded-[28px] border border-white/80 bg-white/88 shadow-[0_18px_40px_rgba(16,42,56,0.14)] backdrop-blur-xl flex items-stretch z-20 pb-[env(safe-area-inset-bottom)]">
+      <nav className="md:hidden fixed bottom-3 left-3 right-3 rounded-[28px] border border-white/80 bg-white/88 shadow-[0_18px_40px_rgba(16,42,56,0.14)] backdrop-blur-xl flex items-stretch z-20 pb-[max(0.4rem,env(safe-area-inset-bottom))]">
         {navItems.map((item) => {
           const isActive = location === item.href;
           return (
             <Link key={item.href} href={item.href} className="flex-1">
               <div
                 className={`
-                flex flex-col items-center justify-center gap-1 py-2.5 cursor-pointer transition-colors
+                flex flex-col items-center justify-center gap-1 py-3 cursor-pointer transition-colors
                 ${isActive ? "text-primary" : "text-muted-foreground"}
               `}
               >
                 <div
-                  className={`rounded-2xl px-3 py-1.5 ${isActive ? "bg-primary/10" : "bg-transparent"}`}
+                  className={`rounded-2xl px-3 py-2 ${isActive ? "bg-primary/10" : "bg-transparent"}`}
                 >
                   <item.icon className="w-5 h-5" />
                 </div>

@@ -118,11 +118,32 @@ export function BackupPanel() {
       ) : null}
 
       <div className="rounded-[22px] border border-white/80 bg-white/72 p-4 md:p-5 space-y-4">
+        <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
+          <div className="grid gap-2">
+            <div className="font-medium">One file, full restore</div>
+            <div className="text-sm text-muted-foreground leading-6">
+              Each backup contains everything stored on this device so you can
+              move your practice history without signing in.
+            </div>
+          </div>
+          <div className="rounded-2xl bg-muted/65 px-3 py-2 text-xs text-muted-foreground">
+            Manual backup
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border/70 bg-background/65 p-3">
+          <p className="text-sm font-medium">Best for</p>
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+            Moving progress between devices right away, keeping an offline copy,
+            or recovering after a reset.
+          </p>
+        </div>
+
         <div className="grid gap-2">
-          <div className="font-medium">One file, full restore</div>
-          <div className="text-sm text-muted-foreground">
-            Each backup contains everything stored on this device so you can
-            move your practice history without signing in.
+          <div className="font-medium">How to move it</div>
+          <div className="text-sm text-muted-foreground leading-6">
+            Download from the device you want to keep, then import that file on
+            the other device.
           </div>
         </div>
 
@@ -130,7 +151,7 @@ export function BackupPanel() {
           <Button
             type="button"
             onClick={handleDownloadBackup}
-            className="h-12 rounded-full px-6"
+            className="h-12 rounded-full px-6 sm:flex-1"
           >
             <Download className="w-4 h-4" />
             Download Backup
@@ -139,7 +160,7 @@ export function BackupPanel() {
             type="button"
             variant="outline"
             onClick={handleImportClick}
-            className="h-12 rounded-full px-6"
+            className="h-12 rounded-full px-6 sm:flex-1"
           >
             <FileUp className="w-4 h-4" />
             Import Backup
